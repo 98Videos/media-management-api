@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaManagementApi.Domain", "src\Core\MediaManagementApi.Domain\MediaManagementApi.Domain.csproj", "{AF9B8B8E-98C8-4DEC-8AE5-AC280821B546}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2D96F1E8-416F-492A-B768-DF5D2274EA6C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{FA6B1C41-CF03-4293-A04D-4AB6237D8078}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AF9B8B8E-98C8-4DEC-8AE5-AC280821B546}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF9B8B8E-98C8-4DEC-8AE5-AC280821B546}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF9B8B8E-98C8-4DEC-8AE5-AC280821B546}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF9B8B8E-98C8-4DEC-8AE5-AC280821B546}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FA6B1C41-CF03-4293-A04D-4AB6237D8078} = {2D96F1E8-416F-492A-B768-DF5D2274EA6C}
+		{AF9B8B8E-98C8-4DEC-8AE5-AC280821B546} = {FA6B1C41-CF03-4293-A04D-4AB6237D8078}
+	EndGlobalSection
+EndGlobal
