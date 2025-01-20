@@ -1,6 +1,6 @@
 ﻿using MediaManagementApi.Domain.Enums;
 
-namespace MediaManagementApi.Domain;
+namespace MediaManagementApi.Domain.Entities;
 
 public class Video
 {

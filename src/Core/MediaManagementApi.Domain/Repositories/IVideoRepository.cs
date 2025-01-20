@@ -1,3 +1,5 @@
+using MediaManagementApi.Domain.Entities;
+
 namespace MediaManagementApi.Domain.Repositories;
 
 public interface IVideoRepository

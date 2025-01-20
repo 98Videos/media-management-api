@@ -7,7 +7,5 @@ public class DomainValidationException: Exception
 
     public DomainValidationException(string propertyName) : base(string.Format(MessageTemplate, propertyName))
     {
-        
-        
     }
 }
