@@ -20,16 +20,16 @@ public static class ServiceCollectionExtensions
             services.MigrateDatabase();
 
         services.AddScoped<IVideoRepository, VideoRepository>();
+        
+        return services;
     }
 
     private static void MigrateDatabase(this IServiceCollection services)
     {
-        using (var serviceScope = services.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>().CreateScope())
-        {
-            var context = serviceScope.ServiceProvider.GetService<VideoDbContext>() ??
-                          throw new ApplicationException("Failed to migrate database!");
+        using var serviceScope = services.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>().CreateScope();
+        var context = serviceScope.ServiceProvider.GetService<VideoDbContext>() ??
+                      throw new ApplicationException("Failed to migrate database!");
 
-            context.Database.Migrate();
-        }
+        context.Database.Migrate();
     }
 }
