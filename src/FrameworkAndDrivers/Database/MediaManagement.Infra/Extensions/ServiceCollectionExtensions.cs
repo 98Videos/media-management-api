@@ -1,6 +1,7 @@
 using MediaManagement.Database.Data;
 using MediaManagement.Database.Repositories;
 using MediaManagementApi.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
