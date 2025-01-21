@@ -9,9 +9,9 @@ public class Video
     public string Filename { get; set; }
     public VideoStatus Status { get; set; }
 
-    public Video(Guid id, string emailUser, string filename, VideoStatus status)
+    public Video(string emailUser, string filename, VideoStatus status)
     {
-        Id = id;
+        Id = Guid.NewGuid();
         EmailUser = emailUser;
         Filename = filename;
         Status = status;

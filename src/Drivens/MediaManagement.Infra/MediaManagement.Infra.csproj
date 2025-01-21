@@ -16,7 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\Core\MediaManagementApi.Domain\MediaManagementApi.Domain.csproj" />
       <ProjectReference Include="..\..\Core\MediaManagementApi.Domain\MediaManagementApi.Domain.csproj" />
     </ItemGroup>
 
