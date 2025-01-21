@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaManagement.Application
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaManagement.Infra", "src\FrameworkAndDrivers\Database\MediaManagement.Infra\MediaManagement.Infra.csproj", "{024518B9-510C-467B-B96B-17D5F3C7B524}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FrameworkAndDrivers", "FrameworkAndDrivers", "{DE665C81-F00B-4263-9FC3-529C66E37A40}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Drivens", "Drivens", "{DE665C81-F00B-4263-9FC3-529C66E37A40}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaManagement.Api", "src\FrameworkAndDrivers\MediaManagement.Api\MediaManagement.Api.csproj", "{322EC9F8-4281-487F-AB05-2FDE2F92292C}"
 EndProject
