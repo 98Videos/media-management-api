@@ -1,3 +1,4 @@
+using MediaManagement.Application.UseCases.Interfaces;
 using MediaManagementApi.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,11 +8,11 @@ namespace MediaManagement.Api.Controllers;
 [Route("api/[controller]")]
 public class VideoController: ControllerBase
 {
-    private readonly IVideoRepository _videoRepository;
+    private readonly IVideoUseCase _videoUseCase;
 
-    public VideoController(IVideoRepository videoRepository)
+    public VideoController(IVideoUseCase _videoUseCase)
     {
-        _videoRepository = videoRepository;
+        this._videoUseCase = _videoUseCase;
     }
 
     [HttpPost("upload")]
@@ -20,5 +21,8 @@ public class VideoController: ControllerBase
         if (file == null || file.Length == 0) 
             return BadRequest();
         
+        this._videoUseCase.ExecuteAsync("teste@teste.com", file.OpenReadStream(), file.FileName).Wait();
+        
+        return Ok();
     }
 }

@@ -12,11 +12,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Core\MediaManagement.Application\MediaManagement.Application.csproj" />
       <ProjectReference Include="..\..\Core\MediaManagementApi.Domain\MediaManagementApi.Domain.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="DependencyInjection\" />
     </ItemGroup>
 
 </Project>
