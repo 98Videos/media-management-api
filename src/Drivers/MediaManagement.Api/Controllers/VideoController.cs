@@ -1,5 +1,4 @@
 using MediaManagement.Application.UseCases.Interfaces;
-using MediaManagementApi.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaManagement.Api.Controllers;

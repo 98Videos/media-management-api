@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Drivens\MediaManagement.Infra\MediaManagement.Infra.csproj" />
+        <ProjectReference Include="..\MediaManagementApi.Domain\MediaManagementApi.Domain.csproj" />
     </ItemGroup>
 
 </Project>
