@@ -1,4 +1,5 @@
 using Amazon.S3;
+using MediaManagement.S3.Exceptions;
 using MediaManagement.S3.Options;
 using MediaManagementApi.Domain.Entities;
 using MediaManagementApi.Domain.Repositories;
@@ -24,19 +25,65 @@ public class S3FileRepository : IFileRepository
     
     public async Task<VideoFile> GetVideoFile(string userEmail, string fileIdentifier)
     {
+        if (string.IsNullOrEmpty(userEmail)) 
+            throw new ArgumentException("User email cannot be null or empty", nameof(userEmail));
+        if (string.IsNullOrEmpty(fileIdentifier)) 
+            throw new ArgumentException("File identifier cannot be null or empty", nameof(fileIdentifier));
+
         try
         {
-            _logger.LogInformation($"getting video stream {userEmail}/{fileIdentifier} on s3...");
+            _logger.LogInformation("Fetching file from bucket '{Bucket}' at key '{Key}'", _options.VideosBucket, $"{userEmail}/{fileIdentifier}");
 
             var s3Response = await _s3Client.GetObjectAsync(_options.VideosBucket, $"{userEmail}/{fileIdentifier}");
 
+            // Certifique-se de que o VideoFile manipula o stream corretamente
             var videoFile = new VideoFile(fileIdentifier, s3Response.ResponseStream);
             return videoFile;
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "could not retrieve object {fileIdentifier} for user {userEmail}", fileIdentifier, userEmail);
-            throw;
+            _logger.LogError(e, "Error fetching object '{FileIdentifier}' for user '{UserEmail}' from bucket '{Bucket}'", fileIdentifier, userEmail, _options.VideosBucket);
+            throw new FileRetrievalException($"Error fetching file {fileIdentifier} for user {userEmail}", e);
+        }
+    }
+    
+    public async Task UploadVideoFile(string userEmail, string fileIdentifier, Stream videoStream)
+    {
+        if (string.IsNullOrEmpty(userEmail)) 
+            throw new ArgumentException("User email cannot be null or empty", nameof(userEmail));
+        if (string.IsNullOrEmpty(fileIdentifier)) 
+            throw new ArgumentException("File identifier cannot be null or empty", nameof(fileIdentifier));
+        if (videoStream == null || videoStream.Length == 0) 
+            throw new ArgumentException("Video stream cannot be null or empty", nameof(videoStream));
+        try
+        {
+            var key = $"{userEmail}/{fileIdentifier}";
+
+            _logger.LogInformation("Uploading video file to bucket '{Bucket}' at key '{Key}'", _options.VideosBucket, key);
+
+            var request = new Amazon.S3.Model.PutObjectRequest
+            {
+                BucketName = _options.VideosBucket,
+                Key = key,
+                InputStream = videoStream,
+                AutoCloseStream = true,
+            };
+
+            var response = await _s3Client.PutObjectAsync(request);
+
+            if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+            {
+                _logger.LogInformation("Successfully uploaded video file to S3: {Key}", key);
+            }
+            else
+            {
+                _logger.LogWarning("Upload to S3 completed but returned status: {StatusCode}", response.HttpStatusCode);
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error uploading video file '{FileIdentifier}' for user '{UserEmail}' to bucket '{Bucket}'", fileIdentifier, userEmail, _options.VideosBucket);
+            throw new FileUploadException($"Error uploading file {fileIdentifier} for user {userEmail}", e);
         }
     }
 }
