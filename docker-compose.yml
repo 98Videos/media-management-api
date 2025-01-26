@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_USER: mediaManagementUser
       POSTGRES_PASSWORD: P4a55w0rd
-      POSTGRES_DB: media-management-api
+      POSTGRES_DB: media-management-db
     ports:
       - "5432:5432"
     volumes:
