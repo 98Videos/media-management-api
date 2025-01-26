@@ -1,26 +1,25 @@
-using Amazon.S3;
-using MediaManagement.Application.UseCases;
-using MediaManagement.Application.UseCases.Interfaces;
+using MediaManagement.Application.DependecyInjection;
 using MediaManagement.Database.DependecyInjection;
-using MediaManagement.Database.Repositories;
-using MediaManagement.S3.Adapters;
-using MediaManagement.S3.Options;
-using MediaManagementApi.Domain.Repositories;
-
+using MediaManagement.S3.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAWSService<IAmazonS3>();
-builder.Services.Configure<S3BucketOptions>(builder.Configuration.GetSection("S3BucketOptions"));
+// Adicionando configurações de banco de dados PostgreSQL
 builder.Services.AddPostgresqlDatabase(builder.Configuration);
 builder.Services.RunDatabaseMigrations(builder.Configuration);
 
-builder.Services.AddScoped<IVideoUseCase, VideoUseCase>();
+// Adicionando o gerenciador de arquivos S3
+builder.Services.AddS3FileManager(builder.Configuration);
 
+// Adicionando o caso de uso do vídeo
+builder.Services.AddVideoUseCase();
+
+// Adicionando configurações básicas para a aplicação
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configurando CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", builder =>
@@ -33,6 +32,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Configurando middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -43,7 +43,7 @@ app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
-
 app.MapControllers();
 
+// Iniciando a aplicação
 app.Run();
