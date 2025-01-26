@@ -21,7 +21,7 @@ builder.Services.AddVideoUseCase();
 builder.Services.AddControllers();
 
 // Adiciona authorizacao do cognito
-builder.Services.AddCognitoAuthentication(builder.Configuration);
+builder.Services.AddCognitoAuthentication(builder.Configuration, builder.Environment);
 
 builder.Services.AddEndpointsApiExplorer()
     .AddSwaggerGen();
@@ -59,7 +59,11 @@ app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
-app.MapControllers();
+
+var controllerMapper = app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+    controllerMapper.AllowAnonymous();
 
 // Iniciando a aplicao
 app.Run();

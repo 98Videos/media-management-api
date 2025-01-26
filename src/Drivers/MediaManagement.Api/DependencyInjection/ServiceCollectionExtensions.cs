@@ -8,8 +8,14 @@ namespace MediaManagement.Api.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddCognitoAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddCognitoAuthentication(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
+            if (environment.IsDevelopment())
+            {
+                services.AddScoped<ICognitoUserInfoService, FakeCognitoUserIdentityService>();
+                return services;
+            }
+
             services.Configure<CognitoAuthenticationOptions>(configuration.GetSection(nameof(CognitoAuthenticationOptions)));
 
             var cognitoConfig = services.BuildServiceProvider().GetRequiredService<IOptions<CognitoAuthenticationOptions>>().Value;
