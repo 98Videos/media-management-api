@@ -20,7 +20,7 @@ services:
       - "8080:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=dotlanche-produto;Username=produtoApiUser;Password=P4a55w0rd
+      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=media-management-db;Username=mediaManagementUser;Password=P4a55w0rd
 
 volumes:
   mediaManagementDb:
