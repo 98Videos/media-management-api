@@ -1,4 +1,5 @@
 using MediaManagement.Application.UseCases.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaManagement.Api.Controllers;
@@ -15,7 +16,8 @@ public class VideoController : ControllerBase
     }
 
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadVideo([FromForm] IFormFile file)
+    [Authorize]
+    public async Task<IActionResult> UploadVideo(IFormFile file)
     {
         if (file == null || file.Length == 0)
         {

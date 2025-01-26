@@ -2,6 +2,8 @@ using MediaManagement.Application.DependecyInjection;
 using MediaManagement.Database.DependecyInjection;
 using MediaManagement.S3.DependencyInjection;
 
+using MediaManagement.Api.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Adicionando configura��es de banco de dados PostgreSQL
@@ -18,6 +20,7 @@ builder.Services.AddVideoUseCase();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCognitoAuthentication(builder.Configuration);
 
 // Configurando CORS
 builder.Services.AddCors(options =>
@@ -32,12 +35,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configurando middleware
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
@@ -45,5 +44,5 @@ app.UseCors("CorsPolicy");
 app.UseAuthorization();
 app.MapControllers();
 
-// Iniciando a aplicação
+// Iniciando a aplica��o
 app.Run();
