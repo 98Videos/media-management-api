@@ -4,17 +4,17 @@ using MediaManagement.S3.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adicionando configurações de banco de dados PostgreSQL
+// Adicionando configura��es de banco de dados PostgreSQL
 builder.Services.AddPostgresqlDatabase(builder.Configuration);
 builder.Services.RunDatabaseMigrations(builder.Configuration);
 
 // Adicionando o gerenciador de arquivos S3
 builder.Services.AddS3FileManager(builder.Configuration);
 
-// Adicionando o caso de uso do vídeo
+// Adicionando o caso de uso do v�deo
 builder.Services.AddVideoUseCase();
 
-// Adicionando configurações básicas para a aplicação
+// Adicionando configura��es b�sicas para a aplica��o
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
