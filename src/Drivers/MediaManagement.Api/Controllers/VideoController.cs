@@ -1,3 +1,5 @@
+using MediaManagement.Api.Extensions;
+using MediaManagement.Api.Services;
 using MediaManagement.Application.UseCases.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,10 +11,12 @@ namespace MediaManagement.Api.Controllers;
 public class VideoController : ControllerBase
 {
     private readonly IVideoUseCase _videoUseCase;
+    private readonly ICognitoUserInfoService _cognitoIdentityService;
 
-    public VideoController(IVideoUseCase videoUseCase)
+    public VideoController(IVideoUseCase videoUseCase, ICognitoUserInfoService cognitoUserInfoService)
     {
         _videoUseCase = videoUseCase;
+        _cognitoIdentityService = cognitoUserInfoService;
     }
 
     [HttpPost("upload")]
@@ -26,10 +30,11 @@ public class VideoController : ControllerBase
 
         try
         {
-            string userEmail = "teste@teste.com";
+            var userToken = Request.GetJwtBearerToken();
+            var userInformation = await _cognitoIdentityService.GetUserInformationAsync(userToken);
 
             var video = await _videoUseCase.ExecuteAsync(
-                emailUser: userEmail,
+                emailUser: userInformation.Email,
                 stream: file.OpenReadStream(),
                 fileName: file.FileName
             );

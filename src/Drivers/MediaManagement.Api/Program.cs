@@ -20,11 +20,14 @@ builder.Services.AddVideoUseCase();
 // Adicionando configuracoes basicas para a aplicacao
 builder.Services.AddControllers();
 
+// Adiciona authorizacao do cognito
+builder.Services.AddCognitoAuthentication(builder.Configuration);
+
 builder.Services.AddEndpointsApiExplorer()
     .AddSwaggerGen();
 
-builder.Services.AddCognitoAuthentication(builder.Configuration);
-
+// Aumenta limites de tamanho da request
+// Necessário para aceitar videos maiores no upload
 builder.Services.Configure<FormOptions>(x =>
 {
     x.ValueLengthLimit = int.MaxValue;

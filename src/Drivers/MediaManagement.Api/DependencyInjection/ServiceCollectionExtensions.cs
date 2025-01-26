@@ -1,5 +1,7 @@
 ﻿using MediaManagement.Api.Options;
+using MediaManagement.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MediaManagement.Api.DependencyInjection
@@ -8,12 +10,17 @@ namespace MediaManagement.Api.DependencyInjection
     {
         public static IServiceCollection AddCognitoAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            var cognitoConfig = new CognitoAuthenticationOptions();
-            configuration
-                .GetRequiredSection(nameof(CognitoAuthenticationOptions))
-                .Bind(cognitoConfig);
+            services.Configure<CognitoAuthenticationOptions>(configuration.GetSection(nameof(CognitoAuthenticationOptions)));
 
+            var cognitoConfig = services.BuildServiceProvider().GetRequiredService<IOptions<CognitoAuthenticationOptions>>().Value;
             var userPoolId = cognitoConfig.UserPoolId;
+
+            var cognitoUrlUserPoolId = userPoolId.Replace("_", "").ToLower();
+
+            services.AddHttpClient<ICognitoUserInfoService, CognitoUserIdentityService>(client =>
+            {
+                client.BaseAddress = new Uri($"https://{cognitoUrlUserPoolId}.auth.us-east-1.amazoncognito.com/oauth2/userinfo");
+            });
 
             services
                 .AddAuthorization()
