@@ -8,7 +8,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - dotLanchesDb:/var/lib/postgresql@17/data
+      - mediaManagementDb:/var/lib/postgresql@17/data
 
   api:
     build:
