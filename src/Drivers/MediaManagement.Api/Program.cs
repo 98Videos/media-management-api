@@ -14,7 +14,7 @@ builder.Services.RunDatabaseMigrations(builder.Configuration);
 // Adicionando o gerenciador de arquivos S3
 builder.Services.AddS3FileManager(builder.Configuration);
 
-// Adicionando o caso de uso do v�deo
+// Adicionando o caso de uso do video
 builder.Services.AddVideoUseCase();
 
 // Adicionando configuracoes basicas para a aplicacao
