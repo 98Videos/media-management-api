@@ -1,5 +1,3 @@
-using Amazon;
-using Amazon.Runtime;
 using Amazon.S3;
 using MediaManagement.S3.Adapters;
 using MediaManagement.S3.Options;
@@ -15,11 +13,13 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<S3BucketOptions>(configuration.GetSection(nameof(S3BucketOptions)));
 
-        var s3Client = new AmazonS3Client(new EnvironmentVariablesAWSCredentials(), RegionEndpoint.USEast1);
+        var awsOptions = configuration.GetAWSOptions();
+        var s3Client = awsOptions.CreateServiceClient<IAmazonS3>();
 
-        services.AddSingleton<IAmazonS3>(s3Client);
+        services.AddSingleton(s3Client);
         services.AddScoped<IFileRepository, S3FileRepository>();
 
         return services;
     }
+
 }

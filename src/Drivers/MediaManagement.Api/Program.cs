@@ -1,13 +1,38 @@
+using MediaManagement.Application.DependecyInjection;
+using MediaManagement.Database.DependecyInjection;
+using MediaManagement.S3.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Adicionando configurações de banco de dados PostgreSQL
+builder.Services.AddPostgresqlDatabase(builder.Configuration);
+builder.Services.RunDatabaseMigrations(builder.Configuration);
+
+// Adicionando o gerenciador de arquivos S3
+builder.Services.AddS3FileManager(builder.Configuration);
+
+// Adicionando o caso de uso do vídeo
+builder.Services.AddVideoUseCase();
+
+// Adicionando configurações básicas para a aplicação
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configurando CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", builder =>
+    {
+        builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configurando middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -15,30 +40,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("CorsPolicy");
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.UseAuthorization();
+app.MapControllers();
 
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
-
+// Iniciando a aplicação
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

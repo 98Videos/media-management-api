@@ -4,32 +4,49 @@ using MediaManagementApi.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
-namespace MediaManagement.Database.Extensions;
+namespace MediaManagement.Database.DependecyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection ConfigureDatabase(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddPostgresqlDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<VideoDbContext>(
-            opt => opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
-        
-        bool.TryParse(configuration.GetSection("RunMigrationsOnStartup").Value, out var shouldRunMigrations);
-
-        if (shouldRunMigrations)
-            services.MigrateDatabase();
-
+        services.AddDbContextPool<VideoDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
         services.AddScoped<IVideoRepository, VideoRepository>();
-        
+
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
         return services;
     }
 
-    private static void MigrateDatabase(this IServiceCollection services)
+    public static IServiceCollection RunDatabaseMigrations(this IServiceCollection services, IConfiguration configuration)
     {
-        using var serviceScope = services.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>().CreateScope();
-        var context = serviceScope.ServiceProvider.GetService<VideoDbContext>() ??
-                      throw new ApplicationException("Failed to migrate database!");
+        using (var sp = services.BuildServiceProvider())
+        {
+            using var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("Video.Data.DependencyInjection");
 
-        context.Database.Migrate();
+            using var scope = sp.CreateScope();
+
+            var db = scope.ServiceProvider.GetRequiredService<VideoDbContext>();
+
+            _ = bool.TryParse(configuration.GetSection("RunMigrationsOnStartup").Value,
+                out var shouldRunMigrationsOnStartup);
+
+            if (shouldRunMigrationsOnStartup)
+            {
+                try
+                {
+                    db.Database.Migrate();
+                }
+                catch (Exception e)
+                {
+                    logger.LogWarning(e, "Could not run Migrations on startup");
+                }
+            }
+        }
+
+        return services;
     }
 }
