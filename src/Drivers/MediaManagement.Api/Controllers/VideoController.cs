@@ -5,23 +5,48 @@ namespace MediaManagement.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class VideoController: ControllerBase
+public class VideoController : ControllerBase
 {
     private readonly IVideoUseCase _videoUseCase;
 
-    public VideoController(IVideoUseCase _videoUseCase)
+    public VideoController(IVideoUseCase videoUseCase)
     {
-        this._videoUseCase = _videoUseCase;
+        _videoUseCase = videoUseCase;
     }
 
     [HttpPost("upload")]
     public async Task<IActionResult> UploadVideo([FromForm] IFormFile file)
     {
-        if (file == null || file.Length == 0) 
-            return BadRequest();
-        
-        this._videoUseCase.ExecuteAsync("teste@teste.com", file.OpenReadStream(), file.FileName).Wait();
-        
-        return Ok();
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(new { message = "Arquivo inválido ou vazio." });
+        }
+
+        try
+        {
+            string userEmail = "teste@teste.com";
+
+            var video = await _videoUseCase.ExecuteAsync(
+                emailUser: userEmail,
+                stream: file.OpenReadStream(),
+                fileName: file.FileName
+            );
+
+            return Ok(new
+            {
+                message = "Upload realizado com sucesso.",
+                videoId = video.Id,
+                fileName = video.Filename,
+                status = video.Status.ToString()
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Erro interno no servidor.", details = ex.Message });
+        }
     }
 }
