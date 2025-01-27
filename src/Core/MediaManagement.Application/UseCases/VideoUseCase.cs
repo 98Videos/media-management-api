@@ -47,4 +47,9 @@ public class VideoUseCase : IVideoUseCase
             throw new InvalidOperationException($"Erro ao processar o vídeo {fileName} para o usuário {emailUser}.", ex);
         }
     }
+
+    public async Task<IEnumerable<Video>> GetAllVideosByUser(string emailUser)
+    {
+        return await _videoRepository.GetAllVideosByUserAsync(emailUser);
+    }
 }
