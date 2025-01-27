@@ -1,6 +1,7 @@
 using MediaManagement.Api.Extensions;
 using MediaManagement.Api.Services;
 using MediaManagement.Application.UseCases.Interfaces;
+using MediaManagementApi.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,5 +56,16 @@ public class VideoController : ControllerBase
         {
             return StatusCode(500, new { message = "Erro interno no servidor.", details = ex.Message });
         }
+    }
+
+    [HttpGet("videolist")]
+    [Authorize]
+    [ProducesResponseType(typeof(IEnumerable<Video>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetVideosStatusList()
+    {
+        var userToken = Request.GetJwtBearerToken();
+        var userInformation = await _cognitoIdentityService.GetUserInformationAsync(userToken);
+        var videoList = await _videoUseCase.GetAllVideosByUser(userInformation.Email);
+        return Ok(videoList);
     }
 }
