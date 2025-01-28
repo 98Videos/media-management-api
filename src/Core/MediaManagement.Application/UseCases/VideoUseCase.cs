@@ -47,4 +47,24 @@ public class VideoUseCase : IVideoUseCase
             throw new InvalidOperationException($"Erro ao processar o vídeo {fileName} para o usuário {emailUser}.", ex);
         }
     }
+
+    public async Task<Video> UpdateStatus(Guid videoId)
+    {
+        if (videoId == Guid.Empty)
+        {
+            throw new ArgumentException("O ID do vídeo não pode ser vazio.", nameof(videoId));
+        }
+
+        Video video = await _videoRepository.GetVideoAsync(videoId);
+        
+        if (video == null)
+        {
+            throw new KeyNotFoundException($"Vídeo com o ID {videoId} não encontrado.");
+        }
+
+        video.UpdateStatus(VideoStatus.PROCESSADO);
+        await _videoRepository.UpdateAsync(video);
+
+        return video;
+    }
 }
