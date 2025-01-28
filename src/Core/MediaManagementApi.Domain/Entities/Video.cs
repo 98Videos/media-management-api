@@ -1,4 +1,5 @@
 ﻿using MediaManagementApi.Domain.Enums;
+using MediaManagementApi.Domain.Exceptions;
 
 namespace MediaManagementApi.Domain.Entities;
 
@@ -15,6 +16,14 @@ public class Video
         EmailUser = emailUser;
         Filename = filename;
         Status = status;
+    }
+
+    private void ValidateEntity()
+    {
+        if (string.IsNullOrEmpty(EmailUser))
+            throw new DomainValidationException(nameof(EmailUser));
+        if (string.IsNullOrEmpty(Filename))
+            throw new DomainValidationException(nameof(Filename));
     }
     
     public void UpdateStatus(VideoStatus status) => Status = status;
