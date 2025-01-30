@@ -18,7 +18,7 @@ public class VideoRepository : IVideoRepository
         return await Task.FromResult(_dbContext.Video.Add(video).Entity);
     }
 
-    public async Task<Video> GetVideoAsync(string videoId)
+    public async Task<Video> GetVideoAsync(Guid videoId)
     {
         return await Task.FromResult(_dbContext.Video.Find(videoId)) ?? throw new InvalidOperationException();
     }
