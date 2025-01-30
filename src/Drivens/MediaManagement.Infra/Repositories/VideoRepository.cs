@@ -30,6 +30,6 @@ public class VideoRepository : IVideoRepository
 
     public async Task<IEnumerable<Video>> GetAllVideosByUserAsync(string emailUser)
     {
-        return await Task.FromResult(_dbContext.Video.Where(v => v.EmailUser == emailUser));
+        return await Task.FromResult(_dbContext.Video.Where(v => v.EmailUser == emailUser)) ?? throw new InvalidOperationException();
     }
 }

@@ -101,14 +101,33 @@ public class VideoController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Recupera os status dos vídeos enviados pelo usuário.
+    /// </summary>
+    /// <returns>Lista de vídeos com os respectivos status.</returns>
     [HttpGet("videolist")]
     [Authorize]
     [ProducesResponseType(typeof(IEnumerable<Video>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetVideosStatusList()
     {
-        var userToken = Request.GetJwtBearerToken();
-        var userInformation = await _cognitoIdentityService.GetUserInformationAsync(userToken);
-        var videoList = await _videoUseCase.GetAllVideosByUser(userInformation.Email);
-        return Ok(videoList);
+        try
+        {
+            var userToken = Request.GetJwtBearerToken();
+            var userInformation = await _cognitoIdentityService.GetUserInformationAsync(userToken);
+            var videoList = await _videoUseCase.GetAllVideosByUser(userInformation.Email);
+            return Ok(videoList);
+        }
+        catch(InvalidOperationException ex)
+        {
+            return Conflict(new { message= ex.Message });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Erro interno no servidor.", details = ex.Message });
+        }
     }
 }
