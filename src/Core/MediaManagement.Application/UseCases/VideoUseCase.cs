@@ -67,4 +67,14 @@ public class VideoUseCase : IVideoUseCase
 
         return video;
     }
+
+    public async Task<IEnumerable<Video>> GetAllVideosByUser(string emailUser)
+    {
+        var list = await _videoRepository.GetAllVideosByUserAsync(emailUser);
+        if (list is null || !list.Any())
+        {
+            throw new KeyNotFoundException();
+        }
+        return list;
+    }
 }

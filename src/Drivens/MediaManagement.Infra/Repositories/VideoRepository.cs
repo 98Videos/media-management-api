@@ -4,7 +4,7 @@ using MediaManagementApi.Domain.Repositories;
 
 namespace MediaManagement.Database.Repositories;
 
-public class VideoRepository: IVideoRepository
+public class VideoRepository : IVideoRepository
 {
     private readonly VideoDbContext _dbContext;
 
@@ -26,5 +26,10 @@ public class VideoRepository: IVideoRepository
     public async Task<Video> UpdateAsync(Video video)
     {
         return await Task.FromResult(_dbContext.Video.Update(video).Entity);
+    }
+
+    public async Task<IEnumerable<Video>> GetAllVideosByUserAsync(string emailUser)
+    {
+        return await Task.FromResult(_dbContext.Video.Where(v => v.EmailUser == emailUser)) ?? throw new InvalidOperationException();
     }
 }

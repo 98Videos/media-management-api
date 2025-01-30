@@ -1,6 +1,7 @@
 using MediaManagement.Api.Extensions;
 using MediaManagement.Api.Services;
 using MediaManagement.Application.UseCases.Interfaces;
+using MediaManagementApi.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -93,6 +94,36 @@ public class VideoController : ControllerBase
         catch (InvalidOperationException ex)
         {
             return Conflict(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Erro interno no servidor.", details = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Recupera os status dos vídeos enviados pelo usuário.
+    /// </summary>
+    /// <returns>Lista de vídeos com os respectivos status.</returns>
+    [HttpGet("videolist")]
+    [Authorize]
+    [ProducesResponseType(typeof(IEnumerable<Video>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetVideosStatusList()
+    {
+        try
+        {
+            var userToken = Request.GetJwtBearerToken();
+            var userInformation = await _cognitoIdentityService.GetUserInformationAsync(userToken);
+            var videoList = await _videoUseCase.GetAllVideosByUser(userInformation.Email);
+            return Ok(videoList);
+        }
+        catch(InvalidOperationException ex)
+        {
+            return Conflict(new { message= ex.Message });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
         }
         catch (Exception ex)
         {
