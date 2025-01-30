@@ -4,6 +4,7 @@ using MediaManagement.S3.DependencyInjection;
 
 using MediaManagement.Api.DependencyInjection;
 using Microsoft.AspNetCore.Http.Features;
+using MediaManagement.SQS.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,9 @@ builder.Services.AddControllers();
 
 // Adiciona authorizacao do cognito
 builder.Services.AddCognitoAuthentication(builder.Configuration, builder.Environment);
+
+// Adiciona serviço de mensageria do sqs
+builder.Services.AddSqsMessagePublisher();
 
 builder.Services.AddEndpointsApiExplorer()
     .AddSwaggerGen();

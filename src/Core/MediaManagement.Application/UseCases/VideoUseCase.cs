@@ -1,8 +1,9 @@
+using MediaManagement.Application.MessageContracts;
 using MediaManagement.Application.UseCases.Interfaces;
 using MediaManagementApi.Domain.Entities;
 using MediaManagementApi.Domain.Enums;
+using MediaManagementApi.Domain.Ports;
 using MediaManagementApi.Domain.Repositories;
-using System;
 
 namespace MediaManagement.Application.UseCases;
 
@@ -10,11 +11,13 @@ public class VideoUseCase : IVideoUseCase
 {
     private readonly IVideoRepository _videoRepository;
     private readonly IFileRepository _fileRepository;
+    private readonly IMessagePublisher<VideoToProcessMessage> messagePublisher;
 
-    public VideoUseCase(IVideoRepository videoRepository, IFileRepository fileRepository)
+    public VideoUseCase(IVideoRepository videoRepository, IFileRepository fileRepository, IMessagePublisher<VideoToProcessMessage> messagePublisher)
     {
         _videoRepository = videoRepository;
         _fileRepository = fileRepository;
+        this.messagePublisher = messagePublisher;
     }
 
     public async Task<Video> ExecuteAsync(string emailUser, Stream stream, string fileName)
@@ -40,6 +43,14 @@ public class VideoUseCase : IVideoUseCase
 
             Video savedVideo = await _videoRepository.AddAsync(video);
 
+            var message = new VideoToProcessMessage()
+            {
+                UserEmail = emailUser,
+                VideoId = fileName,
+            };
+
+            await messagePublisher.PublishAsync(message);
+
             return savedVideo;
         }
         catch (Exception ex)
@@ -56,7 +67,7 @@ public class VideoUseCase : IVideoUseCase
         }
 
         Video video = await _videoRepository.GetVideoAsync(videoId);
-        
+
         if (video == null)
         {
             throw new KeyNotFoundException($"Vídeo com o ID {videoId} não encontrado.");

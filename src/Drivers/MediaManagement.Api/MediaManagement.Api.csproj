@@ -18,6 +18,7 @@
       <ProjectReference Include="..\..\Core\MediaManagementApi.Domain\MediaManagementApi.Domain.csproj" />
       <ProjectReference Include="..\..\Drivens\MediaManagement.Infra\MediaManagement.Infra.csproj" />
       <ProjectReference Include="..\..\Drivens\MediaManagement.S3\MediaManagement.S3.csproj" />
+      <ProjectReference Include="..\..\Drivens\MediaManagement.SQS\MediaManagement.SQS.csproj" />
     </ItemGroup>
 
     <ItemGroup>
