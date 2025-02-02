@@ -1,4 +1,5 @@
 using Amazon.S3;
+using Amazon.S3.Model;
 using MediaManagement.S3.Exceptions;
 using MediaManagement.S3.Options;
 using MediaManagementApi.Domain.Entities;
@@ -46,7 +47,52 @@ public class S3FileRepository : IFileRepository
             throw new FileRetrievalException($"Error fetching file {fileIdentifier} for user {userEmail}", e);
         }
     }
-    
+
+    public async Task<ZipFile> GetZipFile(string userEmail, string fileIdentifier)
+    {
+        if (string.IsNullOrEmpty(userEmail))
+            throw new ArgumentException("User email cannot be null or empty", nameof(userEmail));
+        if (string.IsNullOrEmpty(fileIdentifier))
+            throw new ArgumentException("File identifier cannot be null or empty", nameof(fileIdentifier));
+
+        try
+        {
+            var key = $"{userEmail}/{fileIdentifier}";
+            _logger.LogInformation("Downloading zip file from bucket '{Bucket}' at key '{Key}'", _options.VideosBucket, key);
+
+            var request = new GetObjectRequest
+            {
+                BucketName = _options.VideosBucket,
+                Key = key,
+            };
+
+            using var response = await _s3Client.GetObjectAsync(request);
+            if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+            {
+                using var memoryStream = new MemoryStream();
+                await response.ResponseStream.CopyToAsync(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                var tempFilePath = Path.GetTempFileName();
+                await File.WriteAllBytesAsync(tempFilePath, memoryStream.ToArray());
+
+                _logger.LogInformation("Successfully downloaded zip file from S3: {Key}", key);
+                return new ZipFile(tempFilePath);
+            }
+            else
+            {
+                _logger.LogWarning("Download from S3 completed but returned status: {StatusCode}", response.HttpStatusCode);
+                throw new FileDownloadException("Failed to retrieve file from S3");
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error downloading file '{FileIdentifier}' for user '{UserEmail}' from bucket '{Bucket}'", fileIdentifier, userEmail, _options.VideosBucket);
+            throw new FileDownloadException($"Error downloading file {fileIdentifier} for user {userEmail}", e);
+        }
+    }
+
+
     public async Task UploadVideoFile(string userEmail, string fileIdentifier, Stream videoStream)
     {
         if (string.IsNullOrEmpty(userEmail)) 
