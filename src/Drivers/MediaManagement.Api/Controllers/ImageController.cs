@@ -19,6 +19,11 @@ namespace MediaManagement.Api.Controllers
             _imageUseCase = imageUseCase;
         }
 
+        /// <summary>
+        /// Faz o download do arquivo especificado para o usuário autenticado.
+        /// </summary>
+        /// <param name="fileIdentifier">Nome do arquivo a ser baixado</param>
+        /// <returns>Retorna arquivo ZIP com imagens extraídas do vídeo.</returns>
         [HttpGet("download")]
         [Authorize]
         public async Task<IActionResult> DownloadImages(string fileIdentifier)
@@ -31,7 +36,9 @@ namespace MediaManagement.Api.Controllers
             {
                 var userToken = Request.GetJwtBearerToken();
                 var userInformation = await _cognitoIdentityService.GetUserInformationAsync(userToken);
-                await _imageUseCase.GetZipAsync(userInformation.Email, fileIdentifier);
+                var zipFile = await _imageUseCase.GetZipAsync(userInformation.Email, fileIdentifier);
+                var fileStream = System.IO.File.OpenRead(zipFile.Identifier);
+                return File(fileStream, "application/zip", fileIdentifier + ".zip");
             }
             catch (ArgumentException ex)
             {

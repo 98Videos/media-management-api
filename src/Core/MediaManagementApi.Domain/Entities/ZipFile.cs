@@ -2,7 +2,7 @@
 
 public record ZipFile
 {
-    private string Identifier { get; set; }
+    public string Identifier { get; private set; }
     private ZipFile() { }
     public ZipFile(string identifier)
     {
