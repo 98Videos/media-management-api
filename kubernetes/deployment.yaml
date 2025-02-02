@@ -42,9 +42,9 @@ spec:
             - name: ASPNETCORE_ENVIRONMENT
               value: Production
             - name: S3BUCKETOPTIONS__VIDEOSBUCKET
-              value: media-management-videos
+              value: 98videos-videos-to-process
             - name: S3BUCKETOPTIONS__ZIPFILESBUCKET
-              value: media-management-zip-files
+              value: 98videos-zip-files
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef: 
@@ -59,4 +59,4 @@ spec:
               valueFrom:
                 secretKeyRef: 
                   name: media-management-api-secrets
-                  key: aws-session-token
+                  key: aws-session-token 
