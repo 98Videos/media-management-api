@@ -72,10 +72,6 @@ public class VideoUseCase : IVideoUseCase
     public async Task<IEnumerable<Video>> GetAllVideosByUserAsync(string emailUser, CancellationToken cancellationToken = default)
     {
         var list = await _videoRepository.GetAllVideosByUserAsync(emailUser, cancellationToken);
-        if (list is null || !list.Any())
-        {
-            throw new KeyNotFoundException();
-        }
         return list;
     }
 }

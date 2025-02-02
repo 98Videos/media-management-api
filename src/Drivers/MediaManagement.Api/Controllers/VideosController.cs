@@ -119,14 +119,6 @@ public class VideosController : ControllerBase
             var videoList = await _videoUseCase.GetAllVideosByUserAsync(userInformation.Email, cancellationToken);
             return Ok(videoList);
         }
-        catch (InvalidOperationException ex)
-        {
-            return Conflict(new { message = ex.Message });
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
         catch (Exception ex)
         {
             return StatusCode(500, new { message = "Erro interno no servidor.", details = ex.Message });
