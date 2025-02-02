@@ -16,7 +16,7 @@ namespace MediaManagement.SQS.Adapters
             _logger = logger;
         }
 
-        public async Task PublishAsync<T>(T obj)
+        public async Task PublishAsync<T>(T obj, CancellationToken cancellationToken = default)
             where T : class 
         {
             try
@@ -24,7 +24,7 @@ namespace MediaManagement.SQS.Adapters
                 var mapper = DomainToMessageMapperFactory.GetMessageMapper(obj);
                 var message = mapper.MapToMessageContract(obj);
 
-                await _sendEndpointProvider.Send(message);
+                await _sendEndpointProvider.Send(message, cancellationToken);
                 _logger.LogInformation("published message successfully");
             }
             catch (Exception e)

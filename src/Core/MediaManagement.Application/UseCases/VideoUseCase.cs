@@ -19,7 +19,7 @@ public class VideoUseCase : IVideoUseCase
         _messagePublisher = messagePublisher;
     }
 
-    public async Task<Video> ExecuteAsync(string emailUser, Stream stream, string fileName)
+    public async Task<Video> ExecuteAsync(string emailUser, Stream stream, string fileName, CancellationToken cancellationToken)
     {
         if (stream == null)
         {
@@ -34,47 +34,44 @@ public class VideoUseCase : IVideoUseCase
         Video video = new Video(
             emailUser: emailUser,
             filename: fileName,
-            VideoStatus.NAO_PROCESSADO);
+            VideoStatus.EmProcessamento);
 
         try
         {
-            await _fileRepository.UploadVideoFile(emailUser, fileName, stream);
+            var savedVideo = await _videoRepository.AddAsync(video, cancellationToken);
 
-            Video savedVideo = await _videoRepository.AddAsync(video);
+            await _fileRepository.UploadVideoFileAsync(emailUser, fileName, stream, cancellationToken);
 
-            await _messagePublisher.PublishAsync(video);
+            await _messagePublisher.PublishAsync(video, cancellationToken);
 
             return savedVideo;
         }
         catch (Exception ex)
         {
+            video.UpdateStatus(VideoStatus.Falha);
             throw new InvalidOperationException($"Erro ao processar o vídeo {fileName} para o usuário {emailUser}.", ex);
         }
     }
 
-    public async Task<Video> UpdateStatus(Guid videoId)
+    public async Task<Video> UpdateStatusAsync(Guid videoId, VideoStatus status, CancellationToken cancellationToken)
     {
         if (videoId == Guid.Empty)
         {
             throw new ArgumentException("O ID do vídeo não pode ser vazio.", nameof(videoId));
         }
 
-        Video video = await _videoRepository.GetVideoAsync(videoId);
+        var video = await _videoRepository.GetVideoAsync(videoId, cancellationToken) 
+            ?? throw new KeyNotFoundException($"Vídeo com o ID {videoId} não encontrado.");
 
-        if (video == null)
-        {
-            throw new KeyNotFoundException($"Vídeo com o ID {videoId} não encontrado.");
-        }
-
-        video.UpdateStatus(VideoStatus.PROCESSADO);
-        await _videoRepository.UpdateAsync(video);
+        video.UpdateStatus(status);
+        await _videoRepository.UpdateAsync(video, cancellationToken);
 
         return video;
     }
 
-    public async Task<IEnumerable<Video>> GetAllVideosByUser(string emailUser)
+    public async Task<IEnumerable<Video>> GetAllVideosByUserAsync(string emailUser, CancellationToken cancellationToken = default)
     {
-        var list = await _videoRepository.GetAllVideosByUserAsync(emailUser);
+        var list = await _videoRepository.GetAllVideosByUserAsync(emailUser, cancellationToken);
         if (list is null || !list.Any())
         {
             throw new KeyNotFoundException();

@@ -4,6 +4,6 @@ namespace MediaManagementApi.Domain.Repositories;
 
 public interface IFileRepository
 {
-    Task<VideoFile> GetVideoFile(string userEmail, string fileIdentifier);
-    Task UploadVideoFile(string userEmail, string fileIdentifier, Stream videoStream);
+    Task<VideoFile> GetVideoFileAsync(string userEmail, string fileIdentifier, CancellationToken cancellationToken = default);
+    Task UploadVideoFileAsync(string userEmail, string fileIdentifier, Stream videoStream, CancellationToken cancellationToken = default);
 }
