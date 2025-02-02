@@ -1,8 +1,8 @@
 using MediaManagement.Application.UseCases.Interfaces;
 using MediaManagementApi.Domain.Entities;
 using MediaManagementApi.Domain.Enums;
+using MediaManagementApi.Domain.Ports;
 using MediaManagementApi.Domain.Repositories;
-using System;
 
 namespace MediaManagement.Application.UseCases;
 
@@ -10,14 +10,16 @@ public class VideoUseCase : IVideoUseCase
 {
     private readonly IVideoRepository _videoRepository;
     private readonly IFileRepository _fileRepository;
+    private readonly IMessagePublisher _messagePublisher;
 
-    public VideoUseCase(IVideoRepository videoRepository, IFileRepository fileRepository)
+    public VideoUseCase(IVideoRepository videoRepository, IFileRepository fileRepository, IMessagePublisher messagePublisher)
     {
         _videoRepository = videoRepository;
         _fileRepository = fileRepository;
+        _messagePublisher = messagePublisher;
     }
 
-    public async Task<Video> ExecuteAsync(string emailUser, Stream stream, string fileName)
+    public async Task<Video> ExecuteAsync(string emailUser, Stream stream, string fileName, CancellationToken cancellationToken)
     {
         if (stream == null)
         {
@@ -29,52 +31,44 @@ public class VideoUseCase : IVideoUseCase
             throw new ArgumentException("O nome do arquivo não pode ser nulo ou vazio.", nameof(fileName));
         }
 
-        Video video = new Video(
-            emailUser: emailUser,
-            filename: fileName,
-            VideoStatus.NAO_PROCESSADO);
+        var video = new Video(emailUser: emailUser, filename: fileName);
 
         try
         {
-            await _fileRepository.UploadVideoFile(emailUser, fileName, stream);
+            var savedVideo = await _videoRepository.AddAsync(video, cancellationToken);
 
-            Video savedVideo = await _videoRepository.AddAsync(video);
+            await _fileRepository.UploadVideoFileAsync(emailUser, video.Id.ToString(), stream, cancellationToken);
+
+            await _messagePublisher.PublishAsync(video, cancellationToken);
 
             return savedVideo;
         }
         catch (Exception ex)
         {
+            video.UpdateStatus(VideoStatus.Falha);
             throw new InvalidOperationException($"Erro ao processar o vídeo {fileName} para o usuário {emailUser}.", ex);
         }
     }
 
-    public async Task<Video> UpdateStatus(Guid videoId)
+    public async Task<Video> UpdateStatusAsync(Guid videoId, VideoStatus status, CancellationToken cancellationToken)
     {
         if (videoId == Guid.Empty)
         {
             throw new ArgumentException("O ID do vídeo não pode ser vazio.", nameof(videoId));
         }
 
-        Video video = await _videoRepository.GetVideoAsync(videoId);
-        
-        if (video == null)
-        {
-            throw new KeyNotFoundException($"Vídeo com o ID {videoId} não encontrado.");
-        }
+        var video = await _videoRepository.GetVideoAsync(videoId, cancellationToken) 
+            ?? throw new KeyNotFoundException($"Vídeo com o ID {videoId} não encontrado.");
 
-        video.UpdateStatus(VideoStatus.PROCESSADO);
-        await _videoRepository.UpdateAsync(video);
+        video.UpdateStatus(status);
+        await _videoRepository.UpdateAsync(video, cancellationToken);
 
         return video;
     }
 
-    public async Task<IEnumerable<Video>> GetAllVideosByUser(string emailUser)
+    public async Task<IEnumerable<Video>> GetAllVideosByUserAsync(string emailUser, CancellationToken cancellationToken = default)
     {
-        var list = await _videoRepository.GetAllVideosByUserAsync(emailUser);
-        if (list is null || !list.Any())
-        {
-            throw new KeyNotFoundException();
-        }
+        var list = await _videoRepository.GetAllVideosByUserAsync(emailUser, cancellationToken);
         return list;
     }
 }

@@ -15,13 +15,13 @@ namespace MediaManagement.Api.Services
             _httpClient = httpClient;
         }
 
-        public async Task<UserInformation> GetUserInformationAsync(string userToken)
+        public async Task<UserInformation> GetUserInformationAsync(string userToken, CancellationToken cancellationToken = default)
         {
             var requestMessage = new HttpRequestMessage() { Method = HttpMethod.Get };
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue(scheme: "Bearer", parameter: userToken);
 
-            var response = await _httpClient.SendAsync(requestMessage);
-            var userInfo = await JsonSerializer.DeserializeAsync<UserInfoResponse>(response.Content.ReadAsStream(), jsonSerializerOptions)
+            var response = await _httpClient.SendAsync(requestMessage, cancellationToken);
+            var userInfo = await JsonSerializer.DeserializeAsync<UserInfoResponse>(response.Content.ReadAsStream(), jsonSerializerOptions, cancellationToken)
                 ?? throw new Exception("Error getting user info!");
 
             return new UserInformation(userInfo.Username, userInfo.Email);

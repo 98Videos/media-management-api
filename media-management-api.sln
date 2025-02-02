@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaManagement.SQS", "src\Drivens\MediaManagement.SQS\MediaManagement.SQS.csproj", "{356BEFF7-D47A-4F2C-AF47-F0DB15047B06}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{44DECD65-5EBF-4F13-A39A-79D4472A2567}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44DECD65-5EBF-4F13-A39A-79D4472A2567}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44DECD65-5EBF-4F13-A39A-79D4472A2567}.Release|Any CPU.Build.0 = Release|Any CPU
+		{356BEFF7-D47A-4F2C-AF47-F0DB15047B06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{356BEFF7-D47A-4F2C-AF47-F0DB15047B06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{356BEFF7-D47A-4F2C-AF47-F0DB15047B06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{356BEFF7-D47A-4F2C-AF47-F0DB15047B06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,5 +71,6 @@ Global
 		{05AC5A39-F666-4BB1-A1A6-AAB74EA7D1FC} = {2D96F1E8-416F-492A-B768-DF5D2274EA6C}
 		{9E320D65-E710-4570-A8ED-B866C23CC2C5} = {05AC5A39-F666-4BB1-A1A6-AAB74EA7D1FC}
 		{44DECD65-5EBF-4F13-A39A-79D4472A2567} = {DE665C81-F00B-4263-9FC3-529C66E37A40}
+		{356BEFF7-D47A-4F2C-AF47-F0DB15047B06} = {DE665C81-F00B-4263-9FC3-529C66E37A40}
 	EndGlobalSection
 EndGlobal
