@@ -2,6 +2,7 @@ using MediaManagement.Api.Extensions;
 using MediaManagement.Api.Services;
 using MediaManagement.Application.UseCases.Interfaces;
 using MediaManagementApi.Domain.Entities;
+using MediaManagementApi.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,12 +10,12 @@ namespace MediaManagement.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class VideoController : ControllerBase
+public class VideosController : ControllerBase
 {
     private readonly IVideoUseCase _videoUseCase;
     private readonly ICognitoUserInfoService _cognitoIdentityService;
 
-    public VideoController(IVideoUseCase videoUseCase, ICognitoUserInfoService cognitoUserInfoService)
+    public VideosController(IVideoUseCase videoUseCase, ICognitoUserInfoService cognitoUserInfoService)
     {
         _videoUseCase = videoUseCase;
         _cognitoIdentityService = cognitoUserInfoService;
@@ -27,7 +28,7 @@ public class VideoController : ControllerBase
     /// <returns>Retorna informações do vídeo enviado ou mensagem de erro.</returns>
     [HttpPost("upload")]
     [Authorize]
-    public async Task<IActionResult> UploadVideo(IFormFile file)
+    public async Task<IActionResult> UploadVideo(IFormFile file, CancellationToken cancellationToken)
     {
         if (file == null || file.Length == 0)
         {
@@ -42,7 +43,8 @@ public class VideoController : ControllerBase
             var video = await _videoUseCase.ExecuteAsync(
                 emailUser: userInformation.Email,
                 stream: file.OpenReadStream(),
-                fileName: file.FileName
+                fileName: file.FileName,
+                cancellationToken: cancellationToken
             );
 
             return Ok(new
@@ -62,7 +64,7 @@ public class VideoController : ControllerBase
             return StatusCode(500, new { message = "Erro interno no servidor.", details = ex.Message });
         }
     }
-    
+
     /// <summary>
     /// Atualiza o status de um vídeo.
     /// </summary>
@@ -70,11 +72,11 @@ public class VideoController : ControllerBase
     /// <returns>Retorna o vídeo atualizado ou mensagem de erro.</returns>
     [HttpPut("{videoId:guid}/status")]
     [Authorize]
-    public async Task<IActionResult> UpdateVideoStatus(Guid videoId)
+    public async Task<IActionResult> UpdateVideoStatus(Guid videoId, VideoStatus status, CancellationToken cancellationToken)
     {
         try
         {
-            var updatedVideo = await _videoUseCase.UpdateStatus(videoId);
+            var updatedVideo = await _videoUseCase.UpdateStatusAsync(videoId, status, cancellationToken);
 
             return Ok(new
             {
@@ -108,18 +110,18 @@ public class VideoController : ControllerBase
     [HttpGet("videolist")]
     [Authorize]
     [ProducesResponseType(typeof(IEnumerable<Video>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetVideosStatusList()
+    public async Task<IActionResult> GetVideosStatusList(CancellationToken cancellationToken)
     {
         try
         {
             var userToken = Request.GetJwtBearerToken();
-            var userInformation = await _cognitoIdentityService.GetUserInformationAsync(userToken);
-            var videoList = await _videoUseCase.GetAllVideosByUser(userInformation.Email);
+            var userInformation = await _cognitoIdentityService.GetUserInformationAsync(userToken, cancellationToken);
+            var videoList = await _videoUseCase.GetAllVideosByUserAsync(userInformation.Email, cancellationToken);
             return Ok(videoList);
         }
-        catch(InvalidOperationException ex)
+        catch (InvalidOperationException ex)
         {
-            return Conflict(new { message= ex.Message });
+            return Conflict(new { message = ex.Message });
         }
         catch (KeyNotFoundException ex)
         {
