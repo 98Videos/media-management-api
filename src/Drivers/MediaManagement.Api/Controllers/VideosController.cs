@@ -1,3 +1,5 @@
+using MediaManagement.Api.Contracts.Requests;
+using MediaManagement.Api.Contracts.Responses;
 using MediaManagement.Api.Extensions;
 using MediaManagement.Api.Services;
 using MediaManagement.Application.UseCases.Interfaces;
@@ -72,17 +74,17 @@ public class VideosController : ControllerBase
     /// <returns>Retorna o vídeo atualizado ou mensagem de erro.</returns>
     [HttpPut("{videoId:guid}/status")]
     [Authorize]
-    public async Task<IActionResult> UpdateVideoStatus(Guid videoId, VideoStatus status, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateVideoStatus(Guid videoId, UpdateVideoRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            var updatedVideo = await _videoUseCase.UpdateStatusAsync(videoId, status, cancellationToken);
+            var updatedVideo = await _videoUseCase.UpdateStatusAsync(videoId, request.Status, cancellationToken);
 
-            return Ok(new
+            return Ok(new UpdateVideoResponse()
             {
-                message = "Status do vídeo atualizado com sucesso.",
-                videoId = updatedVideo.Id,
-                status = updatedVideo.Status.ToString()
+                VideoId = updatedVideo.Id,
+                Status = updatedVideo.Status,
+                Message = "Status do vídeo atualizado com sucesso."
             });
         }
         catch (ArgumentException ex)

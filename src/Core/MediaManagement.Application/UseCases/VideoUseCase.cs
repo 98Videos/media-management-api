@@ -31,16 +31,13 @@ public class VideoUseCase : IVideoUseCase
             throw new ArgumentException("O nome do arquivo não pode ser nulo ou vazio.", nameof(fileName));
         }
 
-        Video video = new Video(
-            emailUser: emailUser,
-            filename: fileName,
-            VideoStatus.EmProcessamento);
+        var video = new Video(emailUser: emailUser, filename: fileName);
 
         try
         {
             var savedVideo = await _videoRepository.AddAsync(video, cancellationToken);
 
-            await _fileRepository.UploadVideoFileAsync(emailUser, fileName, stream, cancellationToken);
+            await _fileRepository.UploadVideoFileAsync(emailUser, video.Id.ToString(), stream, cancellationToken);
 
             await _messagePublisher.PublishAsync(video, cancellationToken);
 

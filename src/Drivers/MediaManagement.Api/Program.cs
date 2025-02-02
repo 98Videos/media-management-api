@@ -5,6 +5,7 @@ using MediaManagement.S3.DependencyInjection;
 using MediaManagement.Api.DependencyInjection;
 using Microsoft.AspNetCore.Http.Features;
 using MediaManagement.SQS.DependencyInjection;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,12 @@ builder.Services.AddSqsMessagePublisher();
 
 builder.Services.AddEndpointsApiExplorer()
     .AddSwaggerGen();
+
+// Configura Enums para serem retornadas como text nas controllers
+builder.Services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 // Aumenta limites de tamanho da request
 // Necessário para aceitar videos maiores no upload

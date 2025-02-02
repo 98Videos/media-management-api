@@ -10,7 +10,7 @@ namespace MediaManagement.SQS.Mappers
             return new VideoToProcessMessage()
             {
                 UserEmail = source.EmailUser,
-                VideoId = source.Filename,
+                VideoId = source.Id.ToString(),
             };
         }
     }

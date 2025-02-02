@@ -10,12 +10,12 @@ public class Video
     public string Filename { get; set; }
     public VideoStatus Status { get; set; }
 
-    public Video(string emailUser, string filename, VideoStatus status)
+    public Video(string emailUser, string filename)
     {
         Id = Guid.NewGuid();
         EmailUser = emailUser;
         Filename = filename;
-        Status = status;
+        Status = VideoStatus.EmProcessamento;
     }
 
     private void ValidateEntity()
