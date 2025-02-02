@@ -1,9 +1,9 @@
 ﻿using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
 using MassTransit;
-using MediaManagement.Application.MessageContracts;
 using MediaManagement.SQS.Adapters;
+using MediaManagement.SQS.Contracts;
 using MediaManagementApi.Domain.Ports;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MediaManagement.SQS.DependencyInjection
@@ -12,18 +12,27 @@ namespace MediaManagement.SQS.DependencyInjection
     {
         public static IServiceCollection AddSqsMessagePublisher(this IServiceCollection services)
         {
-            services.AddMassTransit(x =>
+            services.AddMassTransit(massTransitCfg =>
             {
-                x.UsingAmazonSqs((context, cfg) =>
+
+                massTransitCfg.UsingAmazonSqs((context, sqsCfg) =>
                 {
-                    cfg.Host("us-east-1", h =>
+                    var credentialChain = new CredentialProfileStoreChain();
+                    if (!credentialChain.TryGetAWSCredentials("default", out AWSCredentials awsCredentials))
                     {
-                        h.Credentials(new EnvironmentVariablesAWSCredentials());
+                        awsCredentials = new EnvironmentVariablesAWSCredentials();
+                    }
+
+                    sqsCfg.Host("us-east-1", hostCfg =>
+                    {
+                        hostCfg.Credentials(awsCredentials);
                     });
+
+                    EndpointConvention.Map<VideoToProcessMessage>(new Uri("queue:videos-to-process"));
                 });
             });
 
-            services.AddScoped<IMessagePublisher<VideoToProcessMessage>, SQSMessagePublisher<VideoToProcessMessage>>();
+            services.AddScoped<IMessagePublisher, SQSMessagePublisher>();
 
             return services;
         }

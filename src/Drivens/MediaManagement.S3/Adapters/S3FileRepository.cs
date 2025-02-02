@@ -1,3 +1,4 @@
+using Amazon.Runtime;
 using Amazon.S3;
 using MediaManagement.S3.Exceptions;
 using MediaManagement.S3.Options;
@@ -13,7 +14,7 @@ public class S3FileRepository : IFileRepository
     private readonly IAmazonS3 _s3Client;
     private readonly S3BucketOptions _options;
     private readonly ILogger _logger;
-    
+
     public S3FileRepository(IAmazonS3 amazonS3,
             IOptions<S3BucketOptions> options,
             ILogger<S3FileRepository> logger)
@@ -22,12 +23,12 @@ public class S3FileRepository : IFileRepository
         this._logger = logger;
         this._options = options.Value;
     }
-    
+
     public async Task<VideoFile> GetVideoFile(string userEmail, string fileIdentifier)
     {
-        if (string.IsNullOrEmpty(userEmail)) 
+        if (string.IsNullOrEmpty(userEmail))
             throw new ArgumentException("User email cannot be null or empty", nameof(userEmail));
-        if (string.IsNullOrEmpty(fileIdentifier)) 
+        if (string.IsNullOrEmpty(fileIdentifier))
             throw new ArgumentException("File identifier cannot be null or empty", nameof(fileIdentifier));
 
         try
@@ -46,14 +47,14 @@ public class S3FileRepository : IFileRepository
             throw new FileRetrievalException($"Error fetching file {fileIdentifier} for user {userEmail}", e);
         }
     }
-    
+
     public async Task UploadVideoFile(string userEmail, string fileIdentifier, Stream videoStream)
     {
-        if (string.IsNullOrEmpty(userEmail)) 
+        if (string.IsNullOrEmpty(userEmail))
             throw new ArgumentException("User email cannot be null or empty", nameof(userEmail));
-        if (string.IsNullOrEmpty(fileIdentifier)) 
+        if (string.IsNullOrEmpty(fileIdentifier))
             throw new ArgumentException("File identifier cannot be null or empty", nameof(fileIdentifier));
-        if (videoStream == null || videoStream.Length == 0) 
+        if (videoStream == null || videoStream.Length == 0)
             throw new ArgumentException("Video stream cannot be null or empty", nameof(videoStream));
         try
         {
@@ -67,6 +68,15 @@ public class S3FileRepository : IFileRepository
                 Key = key,
                 InputStream = videoStream,
                 AutoCloseStream = true,
+            };
+            var lastPercentage = 0;
+            request.StreamTransferProgress += (object? sender, StreamTransferProgressArgs e) =>
+            {
+                if (e.PercentDone != lastPercentage && e.PercentDone % 5 == 0)
+                {
+                    _logger.LogInformation($"{fileIdentifier} upload progress: {e.PercentDone}%");
+                    lastPercentage = e.PercentDone;
+                }
             };
 
             var response = await _s3Client.PutObjectAsync(request);
