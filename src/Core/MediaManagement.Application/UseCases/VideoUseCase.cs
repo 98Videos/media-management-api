@@ -1,4 +1,3 @@
-using MediaManagement.Application.MessageContracts;
 using MediaManagement.Application.UseCases.Interfaces;
 using MediaManagementApi.Domain.Entities;
 using MediaManagementApi.Domain.Enums;
@@ -11,13 +10,13 @@ public class VideoUseCase : IVideoUseCase
 {
     private readonly IVideoRepository _videoRepository;
     private readonly IFileRepository _fileRepository;
-    private readonly IMessagePublisher<VideoToProcessMessage> messagePublisher;
+    private readonly IMessagePublisher _messagePublisher;
 
-    public VideoUseCase(IVideoRepository videoRepository, IFileRepository fileRepository, IMessagePublisher<VideoToProcessMessage> messagePublisher)
+    public VideoUseCase(IVideoRepository videoRepository, IFileRepository fileRepository, IMessagePublisher messagePublisher)
     {
         _videoRepository = videoRepository;
         _fileRepository = fileRepository;
-        this.messagePublisher = messagePublisher;
+        _messagePublisher = messagePublisher;
     }
 
     public async Task<Video> ExecuteAsync(string emailUser, Stream stream, string fileName)
@@ -43,13 +42,7 @@ public class VideoUseCase : IVideoUseCase
 
             Video savedVideo = await _videoRepository.AddAsync(video);
 
-            var message = new VideoToProcessMessage()
-            {
-                UserEmail = emailUser,
-                VideoId = fileName,
-            };
-
-            await messagePublisher.PublishAsync(message);
+            await _messagePublisher.PublishAsync(video);
 
             return savedVideo;
         }

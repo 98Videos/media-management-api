@@ -1,8 +1,7 @@
 ﻿namespace MediaManagementApi.Domain.Ports
 {
-    public interface IMessagePublisher<T>
-        where T : class
+    public interface IMessagePublisher
     {
-        Task PublishAsync(T message);
+        Task PublishAsync<T>(T message) where T : class;
     }
 }
