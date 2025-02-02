@@ -24,7 +24,7 @@ public class S3FileRepository : IFileRepository
         this._options = options.Value;
     }
 
-    public async Task<VideoFile> GetVideoFile(string userEmail, string fileIdentifier)
+    public async Task<VideoFile> GetVideoFileAsync(string userEmail, string fileIdentifier, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(userEmail))
             throw new ArgumentException("User email cannot be null or empty", nameof(userEmail));
@@ -35,7 +35,7 @@ public class S3FileRepository : IFileRepository
         {
             _logger.LogInformation("Fetching file from bucket '{Bucket}' at key '{Key}'", _options.VideosBucket, $"{userEmail}/{fileIdentifier}");
 
-            var s3Response = await _s3Client.GetObjectAsync(_options.VideosBucket, $"{userEmail}/{fileIdentifier}");
+            var s3Response = await _s3Client.GetObjectAsync(_options.VideosBucket, $"{userEmail}/{fileIdentifier}", cancellationToken);
 
             // Certifique-se de que o VideoFile manipula o stream corretamente
             var videoFile = new VideoFile(fileIdentifier, s3Response.ResponseStream);
@@ -48,7 +48,7 @@ public class S3FileRepository : IFileRepository
         }
     }
 
-    public async Task UploadVideoFile(string userEmail, string fileIdentifier, Stream videoStream)
+    public async Task UploadVideoFileAsync(string userEmail, string fileIdentifier, Stream videoStream, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(userEmail))
             throw new ArgumentException("User email cannot be null or empty", nameof(userEmail));
@@ -79,7 +79,7 @@ public class S3FileRepository : IFileRepository
                 }
             };
 
-            var response = await _s3Client.PutObjectAsync(request);
+            var response = await _s3Client.PutObjectAsync(request, cancellationToken);
 
             if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
             {
