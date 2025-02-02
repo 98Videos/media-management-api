@@ -1,6 +1,7 @@
 using MediaManagement.Database.Data;
 using MediaManagementApi.Domain.Entities;
 using MediaManagementApi.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace MediaManagement.Database.Repositories;
 
@@ -12,24 +13,31 @@ public class VideoRepository : IVideoRepository
     {
         _dbContext = dbContext;
     }
-    
-    public async Task<Video> AddAsync(Video video)
+
+    public async Task<Video> AddAsync(Video video, CancellationToken cancellationToken = default)
     {
-        return await Task.FromResult(_dbContext.Video.Add(video).Entity);
+        await _dbContext.AddAsync(video, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return video;
     }
 
-    public async Task<Video> GetVideoAsync(Guid videoId)
+    public async Task<Video?> GetVideoAsync(Guid videoId, CancellationToken cancellationToken = default)
     {
-        return await Task.FromResult(_dbContext.Video.Find(videoId)) ?? throw new InvalidOperationException();
+        var video = await _dbContext.Videos.AsNoTracking().SingleOrDefaultAsync(x => x.Id == videoId, cancellationToken);
+        return video;
     }
 
-    public async Task<Video> UpdateAsync(Video video)
+    public async Task<Video> UpdateAsync(Video video, CancellationToken cancellationToken = default)
     {
-        return await Task.FromResult(_dbContext.Video.Update(video).Entity);
+        _dbContext.Videos.Update(video);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return video;
     }
 
-    public async Task<IEnumerable<Video>> GetAllVideosByUserAsync(string emailUser)
+    public async Task<IEnumerable<Video>> GetAllVideosByUserAsync(string emailUser, CancellationToken cancellationToken = default)
     {
-        return await Task.FromResult(_dbContext.Video.Where(v => v.EmailUser == emailUser)) ?? throw new InvalidOperationException();
+        return await _dbContext.Videos.AsQueryable().Where(x => x.EmailUser == emailUser).ToListAsync(cancellationToken: cancellationToken);
     }
 }
