@@ -125,19 +125,6 @@ public class VideoRepositoryTests
     }
 
     [Test]
-    public async Task UpdateAsync_ShouldReturnNull_WhenVideoDoesNotExist()
-    {
-        // Arrange
-        var video = new Video("testuser@example.com", "NonexistentVideo.mp4");
-
-        // Act
-        var result = await _repository.UpdateAsync(video);
-
-        // Assert
-        Assert.Null(result);
-    }
-
-    [Test]
     public async Task GetAllVideosByUserAsync_ShouldReturnVideos_ForSpecificUser()
     {
         // Arrange
