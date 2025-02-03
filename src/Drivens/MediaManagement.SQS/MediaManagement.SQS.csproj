@@ -15,4 +15,12 @@
     <ProjectReference Include="..\..\Core\MediaManagement.Application\MediaManagement.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="MediaManagement.UnitTests" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
 </Project>
