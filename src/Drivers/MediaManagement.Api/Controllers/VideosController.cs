@@ -49,12 +49,12 @@ public class VideosController : ControllerBase
                 cancellationToken: cancellationToken
             );
 
-            return Ok(new
+            return Ok(new VideoUploadResponse()
             {
-                message = "Upload realizado com sucesso.",
-                videoId = video.Id,
-                fileName = video.Filename,
-                status = video.Status.ToString()
+                Message = "Upload realizado com sucesso.",
+                VideoId = video.Id,
+                FileName = video.Filename,
+                Status = video.Status
             });
         }
         catch (ArgumentException ex)
