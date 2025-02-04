@@ -23,6 +23,6 @@ public class ImageUseCase : IImageUseCase
         { 
             throw new ArgumentNullException(nameof(identifier)); 
         }
-        return await _fileRepository.GetZipFile(userEmail, identifier);
+        return await _fileRepository.GetZipFileAsync(userEmail, identifier);
     }
 }
