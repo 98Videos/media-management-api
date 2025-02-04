@@ -38,7 +38,6 @@ public class S3FileRepository : IFileRepository
 
             var s3Response = await _s3Client.GetObjectAsync(_options.VideosBucket, $"{userEmail}/{fileIdentifier}", cancellationToken);
 
-            // Certifique-se de que o VideoFile manipula o stream corretamente
             var videoFile = new VideoFile(fileIdentifier, s3Response.ResponseStream);
             return videoFile;
         }
@@ -49,7 +48,7 @@ public class S3FileRepository : IFileRepository
         }
     }
 
-    public async Task<ZipFile> GetZipFileAsync(string userEmail, string fileIdentifier)
+    public async Task<ZipFile> GetZipFileAsync(string userEmail, string fileIdentifier, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(userEmail))
             throw new ArgumentException("User email cannot be null or empty", nameof(userEmail));
@@ -58,27 +57,13 @@ public class S3FileRepository : IFileRepository
 
         try
         {
-            var key = $"{userEmail}/{fileIdentifier}";
-            _logger.LogInformation("Downloading zip file from bucket '{Bucket}' at key '{Key}'", _options.VideosBucket, key);
+            _logger.LogInformation("Downloading zip file from bucket '{Bucket}' at key '{Key}'", _options.VideosBucket, $"{userEmail}/{fileIdentifier}");
 
-            var request = new GetObjectRequest
-            {
-                BucketName = _options.VideosBucket,
-                Key = key,
-            };
-
-            using var response = await _s3Client.GetObjectAsync(request);
+            var response = await _s3Client.GetObjectAsync(_options.ZipFilesBucket, $"{userEmail}/{fileIdentifier}", cancellationToken);
             if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
             {
-                using var memoryStream = new MemoryStream();
-                await response.ResponseStream.CopyToAsync(memoryStream);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-
-                var tempFilePath = Path.GetTempFileName();
-                await File.WriteAllBytesAsync(tempFilePath, memoryStream.ToArray());
-
-                _logger.LogInformation("Successfully downloaded zip file from S3: {Key}", key);
-                return new ZipFile(tempFilePath);
+                _logger.LogInformation("Successfully downloaded zip file from S3: {Key}", $"{userEmail}/{fileIdentifier}");
+                return new ZipFile(fileIdentifier, response.ResponseStream);
             }
             else
             {
@@ -92,7 +77,6 @@ public class S3FileRepository : IFileRepository
             throw new FileDownloadException($"Error downloading file {fileIdentifier} for user {userEmail}", e);
         }
     }
-
 
     public async Task UploadVideoFileAsync(string userEmail, string fileIdentifier, Stream videoStream, CancellationToken cancellationToken = default)
     {
