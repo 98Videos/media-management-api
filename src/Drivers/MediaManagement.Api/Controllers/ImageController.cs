@@ -26,7 +26,7 @@ namespace MediaManagement.Api.Controllers
         /// <returns>Retorna arquivo ZIP com imagens extraídas do vídeo.</returns>
         [HttpGet("download")]
         [Authorize]
-        public async Task<IActionResult> DownloadImages(string fileIdentifier)
+        public async Task<IActionResult> DownloadImages(string fileIdentifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(fileIdentifier))
             {
@@ -36,9 +36,14 @@ namespace MediaManagement.Api.Controllers
             {
                 var userToken = Request.GetJwtBearerToken();
                 var userInformation = await _cognitoIdentityService.GetUserInformationAsync(userToken);
-                var zipFile = await _imageUseCase.GetZipAsync(userInformation.Email, fileIdentifier);
-                var fileStream = System.IO.File.OpenRead(zipFile.Identifier);
-                return File(fileStream, "application/zip", fileIdentifier + ".zip");
+                var zipFile = await _imageUseCase.DownloadZipFileAsync(userInformation.Email, fileIdentifier);
+                
+                if (zipFile == null)
+                {
+                    return NotFound(new { message = $"Arquivo {fileIdentifier} não encontrado." });
+                }
+                
+                return File(zipFile.FileStreamReference, "application/zip", fileIdentifier + ".zip");
             }
             catch (ArgumentException ex)
             {

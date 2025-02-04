@@ -13,7 +13,7 @@ public class ImageUseCase : IImageUseCase
         _fileRepository = fileRepository;
     }
 
-    public async Task<ZipFile> GetZipAsync(string userEmail, string identifier)
+    public async Task<ZipFile> DownloadZipFileAsync(string userEmail, string identifier, CancellationToken cancellationToken)
     {
         if(string.IsNullOrWhiteSpace(userEmail)) 
         {  

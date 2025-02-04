@@ -4,5 +4,5 @@ namespace MediaManagement.Application.UseCases.Interfaces;
 
 public interface IImageUseCase
 {
-    Task<ZipFile> GetZipAsync(string userEmail, string identifier);
+    Task<ZipFile> DownloadZipFileAsync(string userEmail, string identifier, CancellationToken cancellationToken = default);
 }
