@@ -1,5 +1,7 @@
 ﻿using MediaManagement.Api.Options;
 using MediaManagement.Api.Services;
+using MediaManagement.Application.UseCases;
+using MediaManagement.Application.UseCases.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -17,6 +19,7 @@ namespace MediaManagement.Api.DependencyInjection
             }
 
             services.Configure<CognitoAuthenticationOptions>(configuration.GetSection(nameof(CognitoAuthenticationOptions)));
+            services.AddScoped<IImageUseCase, ImageUseCase>();
 
             var cognitoConfig = services.BuildServiceProvider().GetRequiredService<IOptions<CognitoAuthenticationOptions>>().Value;
             var userPoolId = cognitoConfig.UserPoolId;
