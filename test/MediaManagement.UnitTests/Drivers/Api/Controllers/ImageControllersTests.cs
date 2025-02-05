@@ -45,7 +45,7 @@ public class ImageControllerTests
             HttpContext = httpContext
         };
 
-        var controller = new ImageController(_cognitoUserInfoServiceMock.Object, _imageUseCaseMock.Object)
+        var controller = new ImagesController(_cognitoUserInfoServiceMock.Object, _imageUseCaseMock.Object)
         {
             ControllerContext = controllerContext // Definir o contexto no controller
         };

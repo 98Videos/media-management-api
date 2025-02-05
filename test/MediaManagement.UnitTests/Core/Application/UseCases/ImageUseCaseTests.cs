@@ -24,10 +24,10 @@ public class ImageUseCaseTests
     public async Task GetZipFileAsync_ShouldReturnZipFile()
     {
         var zipFile = new ZipFile("test.zip", new MemoryStream());
-        _fileRepositoryMock.Setup(r => r.GetZipFileAsync("user@example.com", "test.zip", It.IsAny<CancellationToken>()))
+        _fileRepositoryMock.Setup(r => r.GetZipFileAsync("user@example.com", "test_thumbs.zip", It.IsAny<CancellationToken>()))
             .ReturnsAsync(zipFile);
 
-        var result = await _imageUseCase.DownloadZipFileAsync("user@example.com", "test.zip");
+        var result = await _imageUseCase.DownloadZipFileAsync("user@example.com", "test");
 
         Assert.AreEqual(zipFile, result);
     }

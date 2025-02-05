@@ -8,12 +8,12 @@ namespace MediaManagement.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ImageController : ControllerBase
+    public class ImagesController : ControllerBase
     {
         private readonly ICognitoUserInfoService _cognitoIdentityService;
         private readonly IImageUseCase _imageUseCase;
 
-        public ImageController(ICognitoUserInfoService cognitoIdentityService, IImageUseCase imageUseCase)
+        public ImagesController(ICognitoUserInfoService cognitoIdentityService, IImageUseCase imageUseCase)
         {
             _cognitoIdentityService = cognitoIdentityService;
             _imageUseCase = imageUseCase;
