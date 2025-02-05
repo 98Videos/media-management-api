@@ -39,7 +39,7 @@ public class VideoUseCase : IVideoUseCase
 
             await _fileRepository.UploadVideoFileAsync(emailUser, video.Id.ToString(), stream, cancellationToken);
 
-            await _messagePublisher.PublishAsync(video, cancellationToken);
+            await _messagePublisher.PublishVideoToProcessMessage(video, cancellationToken);
 
             return savedVideo;
         }

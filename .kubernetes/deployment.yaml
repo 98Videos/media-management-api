@@ -56,6 +56,8 @@ spec:
               value: us-east-1_2ikmPdEFY
             - name: COGNITOAUTHENTICATIONOPTIONS__COGNITODOMAIN              
               value: https://dotvideos-1.auth.us-east-1.amazoncognito.com/
+            - name: SQSMESSAGEPUBLISHEROPTIONS__QUEUENAME
+              value: videos-to-process
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef: 

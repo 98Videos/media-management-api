@@ -1,103 +1,99 @@
+using MassTransit;
 using MediaManagement.SQS.Adapters;
-using MediaManagement.SQS.Adapters.Interfaces;
+using MediaManagement.SQS.Contracts;
+using MediaManagement.SQS.Options;
+using MediaManagementApi.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 
-namespace MediaManagement.Tests
+namespace MediaManagement.UnitTests.Drivens.SQS.Adapters
 {
     [TestFixture]
     public class SQSMessagePublisherTests
     {
-        private Mock<ISendMessageService> _sendMessageServiceMock;
-        private Mock<IMessageMapperService> _messageMapperServiceMock;
-        private Mock<ILogger<SQSMessagePublisher>> _loggerMock;
-        private SQSMessagePublisher _publisher;
-
+        private readonly Mock<ISendEndpointProvider> _sendEndpointProviderMock = new();
+        private readonly Mock<ISendEndpoint> _sendEndpointMock = new();
+        private readonly Mock<ILogger<SQSMessagePublisher>> _loggerMock = new();
+        private readonly SqsMessagePublisherOptions _options = new() { QueueName = "test" };
+        private SQSMessagePublisher _publisher = null!;
         [SetUp]
         public void SetUp()
         {
-            _sendMessageServiceMock = new Mock<ISendMessageService>();
-            _messageMapperServiceMock = new Mock<IMessageMapperService>();
-            _loggerMock = new Mock<ILogger<SQSMessagePublisher>>();
+            _sendEndpointMock.Reset();
+            _sendEndpointProviderMock.Reset();
+            _loggerMock.Reset();
+
+            _sendEndpointProviderMock
+                .Setup(x => x.GetSendEndpoint(It.IsAny<Uri>()))
+                .ReturnsAsync(_sendEndpointMock.Object);
 
             _publisher = new SQSMessagePublisher(
-                _sendMessageServiceMock.Object,
-                _messageMapperServiceMock.Object,
+                _sendEndpointProviderMock.Object,
+                Options.Create(_options),
                 _loggerMock.Object);
         }
 
         [Test]
-        public async Task PublishAsync_ShouldCallSendMessage_WhenMappingIsSuccessful()
+        public async Task PublishAsync_WhenReceivingAVideo_ShouldCallSendWithCorrectMessage()
         {
             // Arrange
-            var testMessage = new { Id = 1, Name = "Test" };
-            var mappedMessage = new { ProcessedId = 1, ProcessedName = "MappedTest" };
-
-            _messageMapperServiceMock
-                .Setup(m => m.MapToMessage(testMessage))
-                .Returns(mappedMessage);
-
-            _sendMessageServiceMock
-                .Setup(s => s.SendMessageAsync(mappedMessage, It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
+            var receivedVideo = new Video("email@test.com", "testvideo.mp4");
 
             // Act
-            await _publisher.PublishAsync(testMessage);
+            await _publisher.PublishVideoToProcessMessage(receivedVideo);
 
             // Assert
-            _messageMapperServiceMock.Verify(m => m.MapToMessage(testMessage), Times.Once);
-            _sendMessageServiceMock.Verify(s => s.SendMessageAsync(It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Once);
+            _sendEndpointMock.Verify(m => m.Send(It.Is<VideoToProcessMessage>(x =>
+                    x.VideoId == receivedVideo.Id.ToString()
+                    && x.UserEmail == receivedVideo.EmailUser
+                ),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
         }
 
         [Test]
-        public void PublishAsync_ShouldThrowException_WhenMappingFails()
+        public async Task PublishAsync_WhenOptionsIsPopulated_ShouldCallGetSendEndpointWithCorrectUri()
         {
             // Arrange
-            var testMessage = new { Id = 1, Name = "Test" };
+            var receivedVideo = new Video("email@test.com", "testvideo.mp4");
 
-            _messageMapperServiceMock
-                .Setup(m => m.MapToMessage(testMessage))
-                .Returns((object)null);
+            // Act
+            await _publisher.PublishVideoToProcessMessage(receivedVideo);
 
-            // Act & Assert
-            var ex = Assert.ThrowsAsync<InvalidOperationException>(async () => 
-                await _publisher.PublishAsync(testMessage));
-
-            Assert.That(ex.Message, Is.EqualTo($"Mapped message is null for {testMessage.GetType().Name}"));
-
-            _messageMapperServiceMock.Verify(m => m.MapToMessage(testMessage), Times.Once);
-            _sendMessageServiceMock.Verify(s => s.SendMessageAsync(It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Never);
+            // Assert
+            _sendEndpointProviderMock
+                .Verify(x =>
+                x.GetSendEndpoint(It.Is<Uri>(x =>
+                    x.OriginalString == $"queue:{_options.QueueName}"
+                )),
+                Times.Once);
         }
 
         [Test]
-        public async Task PublishAsync_ShouldLogError_WhenExceptionOccurs()
+        public void PublishAsync_ShouldLogError_WhenExceptionOccurs()
         {
             // Arrange
-            var testMessage = new { Id = 1, Name = "Test" };
-            var mappedMessage = new { ProcessedId = 1, ProcessedName = "MappedTest" };
+            var receivedVideo = new Video("email@test.com", "testvideo.mp4");
 
-            _messageMapperServiceMock
-                .Setup(m => m.MapToMessage(testMessage))
-                .Returns(mappedMessage);
-
-            _sendMessageServiceMock
-                .Setup(s => s.SendMessageAsync(It.IsAny<object>(), It.IsAny<CancellationToken>()))
+            _sendEndpointMock
+                .Setup(s => s.Send(It.IsAny<VideoToProcessMessage>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new Exception("Simulated exception"));
 
             // Act & Assert
-            var ex = Assert.ThrowsAsync<Exception>(async () => 
-                await _publisher.PublishAsync(testMessage));
+            var ex = Assert.ThrowsAsync<Exception>(async () =>
+                await _publisher.PublishVideoToProcessMessage(receivedVideo));
 
-            Assert.That(ex.Message, Is.EqualTo("Simulated exception"));
+            Assert.That(ex!.Message, Is.EqualTo("Simulated exception"));
 
             _loggerMock.Verify(
                 log => log.Log(
                     It.Is<LogLevel>(l => l == LogLevel.Error),
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((obj, type) => obj.ToString().Contains("Error sending message of type")),
+                    It.Is<It.IsAnyType>((obj, type) => obj.ToString()!.Contains($"An error occured while publishing the message for video {receivedVideo.Id}")),
                     It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);
         }
     }

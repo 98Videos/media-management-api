@@ -5,7 +5,7 @@ namespace MediaManagement.SQS.Contracts
     [MessageUrn("video-to-process-message")]
     public class VideoToProcessMessage
     {
-        public string VideoId { get; set; }
-        public string UserEmail { get; set; }
+        public required string VideoId { get; set; }
+        public required string UserEmail { get; set; }
     }
 }

@@ -52,7 +52,7 @@ public class VideoUseCaseTests
 
         _videoRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<Video>(), It.IsAny<CancellationToken>()), Times.Once);
         _fileRepositoryMock.Verify(repo => repo.UploadVideoFileAsync(emailUser, It.IsAny<string>(), stream, It.IsAny<CancellationToken>()), Times.Once);
-        _messagePublisherMock.Verify(pub => pub.PublishAsync(It.IsAny<Video>(), It.IsAny<CancellationToken>()), Times.Once);
+        _messagePublisherMock.Verify(pub => pub.PublishVideoToProcessMessage(It.IsAny<Video>(), It.IsAny<CancellationToken>()), Times.Once);
 
         Assert.AreEqual(video, result);
     }
