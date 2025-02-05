@@ -13,6 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddPostgresqlDatabase(builder.Configuration);
 builder.Services.RunDatabaseMigrations(builder.Configuration);
 
+// Adiciona health check na aplicação
+builder.Services
+    .AddHealthChecks()
+    .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection") ??
+        throw new Exception("No connection string configured!"));
+
 // Adicionando o gerenciador de arquivos S3
 builder.Services.AddS3FileManager(builder.Configuration);
 
@@ -62,6 +68,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+app.MapHealthChecks("/health");
 
 app.UseSwagger();
 app.UseSwaggerUI();

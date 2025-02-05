@@ -1,9 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MassTransit;
-using MediaManagement.SQS.Adapters.Interfaces;
-using MediaManagement.SQS.Mappers;
+﻿using MediaManagement.SQS.Adapters.Interfaces;
 using MediaManagementApi.Domain.Ports;
 using Microsoft.Extensions.Logging;
 
