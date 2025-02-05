@@ -32,7 +32,7 @@ builder.Services.AddControllers();
 builder.Services.AddCognitoAuthentication(builder.Configuration, builder.Environment);
 
 // Adiciona serviço de mensageria do sqs
-builder.Services.AddSqsMessagePublisher();
+builder.Services.AddSqsMessagePublisher(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer()
     .AddSwaggerGen();

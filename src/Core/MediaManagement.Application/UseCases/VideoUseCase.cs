@@ -3,6 +3,7 @@ using MediaManagementApi.Domain.Entities;
 using MediaManagementApi.Domain.Enums;
 using MediaManagementApi.Domain.Ports;
 using MediaManagementApi.Domain.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace MediaManagement.Application.UseCases;
 
@@ -11,12 +12,17 @@ public class VideoUseCase : IVideoUseCase
     private readonly IVideoRepository _videoRepository;
     private readonly IFileRepository _fileRepository;
     private readonly IMessagePublisher _messagePublisher;
+    private readonly ILogger<VideoUseCase> _logger;
 
-    public VideoUseCase(IVideoRepository videoRepository, IFileRepository fileRepository, IMessagePublisher messagePublisher)
+    public VideoUseCase(IVideoRepository videoRepository,
+                        IFileRepository fileRepository,
+                        IMessagePublisher messagePublisher,
+                        ILogger<VideoUseCase> logger)
     {
         _videoRepository = videoRepository;
         _fileRepository = fileRepository;
         _messagePublisher = messagePublisher;
+        _logger = logger;
     }
 
     public async Task<Video> ExecuteAsync(string emailUser, Stream stream, string fileName, CancellationToken cancellationToken)
@@ -45,7 +51,11 @@ public class VideoUseCase : IVideoUseCase
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "error while uploading video {fileName}", fileName);
+
             video.UpdateStatus(VideoStatus.Falha);
+            await _videoRepository.UpdateAsync(video, cancellationToken);
+
             throw new InvalidOperationException($"Erro ao processar o vídeo {fileName} para o usuário {emailUser}.", ex);
         }
     }

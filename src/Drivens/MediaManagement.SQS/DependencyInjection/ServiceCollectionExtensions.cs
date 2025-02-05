@@ -2,18 +2,21 @@
 using Amazon.Runtime.CredentialManagement;
 using MassTransit;
 using MediaManagement.SQS.Adapters;
+using MediaManagement.SQS.Options;
 using MediaManagementApi.Domain.Ports;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MediaManagement.SQS.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddSqsMessagePublisher(this IServiceCollection services)
+        public static IServiceCollection AddSqsMessagePublisher(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<SqsMessagePublisherOptions>(configuration.GetSection(nameof(SqsMessagePublisherOptions)));
+
             services.AddMassTransit(massTransitCfg =>
             {
-
                 massTransitCfg.UsingAmazonSqs((context, sqsCfg) =>
                 {
                     var credentialChain = new CredentialProfileStoreChain();
