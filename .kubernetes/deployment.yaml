@@ -28,23 +28,34 @@ spec:
           readinessProbe:
             httpGet:
               path: /health
-              port: 5000
-            initialDelaySeconds: 15
+              port: 8080
+            initialDelaySeconds: 25
             failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /health
-              port: 5000
-            initialDelaySeconds: 300
+              port: 8080
+            initialDelaySeconds: 60
             periodSeconds: 60
             failureThreshold: 3
           env:
             - name: ASPNETCORE_ENVIRONMENT
               value: Production
             - name: S3BUCKETOPTIONS__VIDEOSBUCKET
-              value: 98videos-videos-to-process
+              value: videos-bucket-soat72025
             - name: S3BUCKETOPTIONS__ZIPFILESBUCKET
-              value: 98videos-zip-files
+              value: zip-images-bucket-soat72025
+            - name: RUNMIGRATIONSONSTARTUP
+              value: 'true'
+            - name: CONNECTIONSTRINGS__DEFAULTCONNECTION
+              valueFrom:
+                secretKeyRef: 
+                  name: media-management-api-secrets
+                  key: connection-string
+            - name: COGNITOAUTHENTICATIONOPTIONS__USERPOOLID
+              value: us-east-1_2ikmPdEFY
+            - name: COGNITOAUTHENTICATIONOPTIONS__COGNITODOMAIN              
+              value: https://dotvideos-1.auth.us-east-1.amazoncognito.com/
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef: 
