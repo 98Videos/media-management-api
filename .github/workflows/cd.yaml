@@ -49,6 +49,8 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: ${{ steps.meta.outputs.tags }}
+
+    # ta faltando o replace das secrets
         
     - name: AWS Cli login
       uses: aws-actions/configure-aws-credentials@v1
