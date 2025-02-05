@@ -22,13 +22,10 @@ namespace MediaManagement.Api.DependencyInjection
             services.AddScoped<IImageUseCase, ImageUseCase>();
 
             var cognitoConfig = services.BuildServiceProvider().GetRequiredService<IOptions<CognitoAuthenticationOptions>>().Value;
-            var userPoolId = cognitoConfig.UserPoolId;
-
-            var cognitoUrlUserPoolId = userPoolId.Replace("_", "").ToLower();
 
             services.AddHttpClient<ICognitoUserInfoService, CognitoUserIdentityService>(client =>
             {
-                client.BaseAddress = new Uri($"https://{cognitoUrlUserPoolId}.auth.us-east-1.amazoncognito.com/oauth2/userinfo");
+                client.BaseAddress = new Uri(cognitoConfig.CognitoDomain[^1] == '/' ? cognitoConfig.CognitoDomain : cognitoConfig.CognitoDomain + '/');
             });
 
             services
@@ -40,11 +37,11 @@ namespace MediaManagement.Api.DependencyInjection
                 })
                 .AddJwtBearer(options =>
                 {
-                    options.Authority = $"https://cognito-idp.us-east-1.amazonaws.com/{userPoolId}";
+                    options.Authority = $"https://cognito-idp.us-east-1.amazonaws.com/{cognitoConfig.UserPoolId}";
                     options.TokenValidationParameters = new TokenValidationParameters()
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = $"https://cognito-idp.us-east-1.amazonaws.com/{userPoolId}",
+                        ValidIssuer = $"https://cognito-idp.us-east-1.amazonaws.com/{cognitoConfig.UserPoolId}",
                         ValidateLifetime = true,
                         ValidateAudience = false,
                     };
