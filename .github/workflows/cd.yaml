@@ -50,7 +50,21 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
 
-    # ta faltando o replace das secrets
+    - uses: cschleiden/replace-tokens@v1
+      name: Replace tokens in kubernetes files
+      with:
+        files: '[".kubernetes/*.yaml"]'
+      env:
+        APP_IMAGE: ${{ steps.meta.outputs.tags }}
+        CONNECTION_STRING: ${{ secrets.POSTGRESQL_CONNECTIONSTRING}}
+        VIDEOS_BUCKET_NAME: ${{ vars.VIDEOS_BUCKET_NAME }}
+        ZIPFILES_BUCKET_NAME: ${{ vars.ZIPFILES_BUCKET_NAME }}
+        COGNITO_USER_POOL_ID: ${{ vars.COGNITO_USER_POOL_ID }}
+        COGNITO_USER_POOL_DOMAIN: ${{ vars.COGNITO_USER_POOL_DOMAIN }}
+        SQS_VIDEOS_TO_PROCESS_QUEUE: ${{ vars.SQS_VIDEOS_TO_PROCESS_QUEUE }}
+        AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        AWS_SESSION_TOKEN: ${{ env.AWS_SESSION_TOKEN }}
         
     - name: AWS Cli login
       uses: aws-actions/configure-aws-credentials@v1

@@ -41,23 +41,23 @@ spec:
           env:
             - name: ASPNETCORE_ENVIRONMENT
               value: Production
-            - name: S3BUCKETOPTIONS__VIDEOSBUCKET
-              value: videos-bucket-soat72025
-            - name: S3BUCKETOPTIONS__ZIPFILESBUCKET
-              value: zip-images-bucket-soat72025
-            - name: RUNMIGRATIONSONSTARTUP
+            - name: S3BucketOptions__VideosBucket
+              value: "#{VIDEOS_BUCKET_NAME}#"
+            - name: S3BucketOptions__ZipFilesBucket
+              value: "#{ZIPFILES_BUCKET_NAME}#"
+            - name: RunMigrationsOnStartup
               value: 'true'
-            - name: CONNECTIONSTRINGS__DEFAULTCONNECTION
+            - name: ConnectionStrings__DefaultConnection
               valueFrom:
                 secretKeyRef: 
                   name: media-management-api-secrets
                   key: connection-string
-            - name: COGNITOAUTHENTICATIONOPTIONS__USERPOOLID
-              value: us-east-1_2ikmPdEFY
-            - name: COGNITOAUTHENTICATIONOPTIONS__COGNITODOMAIN              
-              value: https://dotvideos-1.auth.us-east-1.amazoncognito.com/
-            - name: SQSMESSAGEPUBLISHEROPTIONS__QUEUENAME
-              value: videos-to-process
+            - name: CognitoAuthenticatiOnoptions__UserpoolId
+              value: "#{COGNITO_USER_POOL_ID}#"
+            - name: CognitoAuthenticationOptions__CognitoDomain              
+              value: "#{COGNITO_USER_POOL_DOMAIN}#"
+            - name: SqsMessagePublisherOptions__QueueName
+              value: "#{SQS_VIDEOS_TO_PROCESS_QUEUE}#"
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef: 
