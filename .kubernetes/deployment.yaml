@@ -58,6 +58,11 @@ spec:
               value: "#{COGNITO_USER_POOL_DOMAIN}#"
             - name: SqsMessagePublisherOptions__QueueName
               value: "#{SQS_VIDEOS_TO_PROCESS_QUEUE}#"
+            - name: ApiKeyAuthenticationOptions__Keys
+              valueFrom:
+                secretKeyRef: 
+                  name: media-management-api-secrets
+                  key: media-manager-api-keys
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef: 

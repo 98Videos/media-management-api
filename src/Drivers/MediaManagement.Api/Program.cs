@@ -29,7 +29,7 @@ builder.Services.AddVideoUseCase();
 builder.Services.AddControllers();
 
 // Adiciona authorizacao do cognito
-builder.Services.AddCognitoAuthentication(builder.Configuration, builder.Environment);
+builder.Services.AddCognitoAuthentication(builder.Configuration);
 
 // Adiciona serviço de mensageria do sqs
 builder.Services.AddSqsMessagePublisher(builder.Configuration);
@@ -77,12 +77,10 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 var controllerMapper = app.MapControllers();
-
-if (app.Environment.IsDevelopment())
-    controllerMapper.AllowAnonymous();
 
 // Iniciando a aplicao
 app.Run();

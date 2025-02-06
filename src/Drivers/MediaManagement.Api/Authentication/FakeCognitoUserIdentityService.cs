@@ -1,6 +1,6 @@
 ﻿using MediaManagement.Api.Models;
 
-namespace MediaManagement.Api.Services
+namespace MediaManagement.Api.Authentication
 {
     public class FakeCognitoUserIdentityService : ICognitoUserInfoService
     {

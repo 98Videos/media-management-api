@@ -3,10 +3,10 @@ using Moq;
 using NUnit.Framework;
 using MediaManagementApi.Domain.Entities;
 using MediaManagement.Api.Controllers;
-using MediaManagement.Api.Services;
 using MediaManagement.Application.UseCases.Interfaces;
 using MediaManagement.Api.Models;
 using Microsoft.AspNetCore.Http;
+using MediaManagement.Api.Authentication;
 
 namespace MediaManagement.UnitTests.Drivers.Api.Controllers;
 

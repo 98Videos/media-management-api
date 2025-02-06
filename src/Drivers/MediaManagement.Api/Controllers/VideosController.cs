@@ -1,10 +1,9 @@
+using MediaManagement.Api.Authentication;
 using MediaManagement.Api.Contracts.Requests;
 using MediaManagement.Api.Contracts.Responses;
 using MediaManagement.Api.Extensions;
-using MediaManagement.Api.Services;
 using MediaManagement.Application.UseCases.Interfaces;
 using MediaManagementApi.Domain.Entities;
-using MediaManagementApi.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,7 +28,7 @@ public class VideosController : ControllerBase
     /// <param name="file">Arquivo de vídeo a ser enviado.</param>
     /// <returns>Retorna informações do vídeo enviado ou mensagem de erro.</returns>
     [HttpPost("upload")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = AuthSchemes.BearerToken)]
     public async Task<IActionResult> UploadVideo(IFormFile file, CancellationToken cancellationToken)
     {
         if (file == null || file.Length == 0)
@@ -73,7 +72,7 @@ public class VideosController : ControllerBase
     /// <param name="videoId">ID do vídeo a ser atualizado.</param>
     /// <returns>Retorna o vídeo atualizado ou mensagem de erro.</returns>
     [HttpPut("{videoId:guid}/status")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = AuthSchemes.ApiKeyOnly)]
     public async Task<IActionResult> UpdateVideoStatus(Guid videoId, UpdateVideoRequest request, CancellationToken cancellationToken)
     {
         try
@@ -110,7 +109,7 @@ public class VideosController : ControllerBase
     /// </summary>
     /// <returns>Lista de vídeos com os respectivos status.</returns>
     [HttpGet("videolist")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = AuthSchemes.BearerToken)]
     [ProducesResponseType(typeof(IEnumerable<Video>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetVideosStatusList(CancellationToken cancellationToken)
     {

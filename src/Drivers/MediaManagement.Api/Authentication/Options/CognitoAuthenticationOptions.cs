@@ -1,4 +1,4 @@
-﻿namespace MediaManagement.Api.Options
+﻿namespace MediaManagement.Api.Authentication.Options
 {
     public class CognitoAuthenticationOptions
     {
