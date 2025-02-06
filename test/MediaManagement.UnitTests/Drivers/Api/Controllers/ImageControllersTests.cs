@@ -3,10 +3,10 @@ using Moq;
 using NUnit.Framework;
 using MediaManagementApi.Domain.Entities;
 using MediaManagement.Api.Controllers;
-using MediaManagement.Api.Services;
 using MediaManagement.Application.UseCases.Interfaces;
 using MediaManagement.Api.Models;
 using Microsoft.AspNetCore.Http;
+using MediaManagement.Api.Authentication;
 
 namespace MediaManagement.UnitTests.Drivers.Api.Controllers;
 
@@ -45,7 +45,7 @@ public class ImageControllerTests
             HttpContext = httpContext
         };
 
-        var controller = new ImageController(_cognitoUserInfoServiceMock.Object, _imageUseCaseMock.Object)
+        var controller = new ImagesController(_cognitoUserInfoServiceMock.Object, _imageUseCaseMock.Object)
         {
             ControllerContext = controllerContext // Definir o contexto no controller
         };

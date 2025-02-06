@@ -57,7 +57,7 @@ public class S3FileRepository : IFileRepository
 
         try
         {
-            _logger.LogInformation("Downloading zip file from bucket '{Bucket}' at key '{Key}'", _options.VideosBucket, $"{userEmail}/{fileIdentifier}");
+            _logger.LogInformation("Downloading zip file from bucket '{Bucket}' at key '{Key}'", _options.ZipFilesBucket, $"{userEmail}/{fileIdentifier}");
 
             var response = await _s3Client.GetObjectAsync(_options.ZipFilesBucket, $"{userEmail}/{fileIdentifier}", cancellationToken);
             if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)

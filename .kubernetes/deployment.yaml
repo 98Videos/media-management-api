@@ -28,23 +28,41 @@ spec:
           readinessProbe:
             httpGet:
               path: /health
-              port: 5000
-            initialDelaySeconds: 15
+              port: 8080
+            initialDelaySeconds: 25
             failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /health
-              port: 5000
-            initialDelaySeconds: 300
+              port: 8080
+            initialDelaySeconds: 60
             periodSeconds: 60
             failureThreshold: 3
           env:
             - name: ASPNETCORE_ENVIRONMENT
               value: Production
-            - name: S3BUCKETOPTIONS__VIDEOSBUCKET
-              value: 98videos-videos-to-process
-            - name: S3BUCKETOPTIONS__ZIPFILESBUCKET
-              value: 98videos-zip-files
+            - name: S3BucketOptions__VideosBucket
+              value: "#{VIDEOS_BUCKET_NAME}#"
+            - name: S3BucketOptions__ZipFilesBucket
+              value: "#{ZIPFILES_BUCKET_NAME}#"
+            - name: RunMigrationsOnStartup
+              value: 'true'
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef: 
+                  name: media-management-api-secrets
+                  key: connection-string
+            - name: CognitoAuthenticatiOnoptions__UserpoolId
+              value: "#{COGNITO_USER_POOL_ID}#"
+            - name: CognitoAuthenticationOptions__CognitoDomain              
+              value: "#{COGNITO_USER_POOL_DOMAIN}#"
+            - name: SqsMessagePublisherOptions__QueueName
+              value: "#{SQS_VIDEOS_TO_PROCESS_QUEUE}#"
+            - name: ApiKeyAuthenticationOptions__Keys
+              valueFrom:
+                secretKeyRef: 
+                  name: media-management-api-secrets
+                  key: media-manager-api-keys
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef: 

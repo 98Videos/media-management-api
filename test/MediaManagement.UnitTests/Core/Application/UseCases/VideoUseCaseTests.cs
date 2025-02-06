@@ -3,6 +3,7 @@ using MediaManagementApi.Domain.Entities;
 using MediaManagementApi.Domain.Enums;
 using MediaManagementApi.Domain.Ports;
 using MediaManagementApi.Domain.Repositories;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 
@@ -14,6 +15,7 @@ public class VideoUseCaseTests
     private Mock<IVideoRepository> _videoRepositoryMock;
     private Mock<IFileRepository> _fileRepositoryMock;
     private Mock<IMessagePublisher> _messagePublisherMock;
+    private Mock<ILogger<VideoUseCase>> _loggerMock;
     private VideoUseCase _videoUseCase;
 
     [SetUp]
@@ -22,7 +24,8 @@ public class VideoUseCaseTests
         _videoRepositoryMock = new Mock<IVideoRepository>();
         _fileRepositoryMock = new Mock<IFileRepository>();
         _messagePublisherMock = new Mock<IMessagePublisher>();
-        _videoUseCase = new VideoUseCase(_videoRepositoryMock.Object, _fileRepositoryMock.Object, _messagePublisherMock.Object);
+        _loggerMock = new Mock<ILogger<VideoUseCase>>();
+        _videoUseCase = new VideoUseCase(_videoRepositoryMock.Object, _fileRepositoryMock.Object, _messagePublisherMock.Object, _loggerMock.Object);
     }
 
     [Test]
@@ -52,7 +55,7 @@ public class VideoUseCaseTests
 
         _videoRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<Video>(), It.IsAny<CancellationToken>()), Times.Once);
         _fileRepositoryMock.Verify(repo => repo.UploadVideoFileAsync(emailUser, It.IsAny<string>(), stream, It.IsAny<CancellationToken>()), Times.Once);
-        _messagePublisherMock.Verify(pub => pub.PublishAsync(It.IsAny<Video>(), It.IsAny<CancellationToken>()), Times.Once);
+        _messagePublisherMock.Verify(pub => pub.PublishVideoToProcessMessage(It.IsAny<Video>(), It.IsAny<CancellationToken>()), Times.Once);
 
         Assert.AreEqual(video, result);
     }

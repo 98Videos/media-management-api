@@ -32,6 +32,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7D178B8E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaManagement.UnitTests", "test\MediaManagement.UnitTests\MediaManagement.UnitTests.csproj", "{EFD8766E-01C8-4E11-A033-C496E5FF5AC6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".kubernetes", ".kubernetes", "{19AD9C78-7D17-4A11-8A74-163A43419232}"
+	ProjectSection(SolutionItems) = preProject
+		.kubernetes\deployment.yaml = .kubernetes\deployment.yaml
+		.kubernetes\hpa.yaml = .kubernetes\hpa.yaml
+		.kubernetes\secrets.yaml = .kubernetes\secrets.yaml
+		.kubernetes\service.yaml = .kubernetes\service.yaml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,5 +89,6 @@ Global
 		{44DECD65-5EBF-4F13-A39A-79D4472A2567} = {DE665C81-F00B-4263-9FC3-529C66E37A40}
 		{356BEFF7-D47A-4F2C-AF47-F0DB15047B06} = {DE665C81-F00B-4263-9FC3-529C66E37A40}
 		{EFD8766E-01C8-4E11-A033-C496E5FF5AC6} = {7D178B8E-E73D-43BB-B077-870EEE71CD6A}
+		{19AD9C78-7D17-4A11-8A74-163A43419232} = {A349415F-00EA-49A7-80C7-0A0BC4643200}
 	EndGlobalSection
 EndGlobal

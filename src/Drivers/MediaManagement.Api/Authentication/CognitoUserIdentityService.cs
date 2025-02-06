@@ -2,7 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace MediaManagement.Api.Services
+namespace MediaManagement.Api.Authentication
 {
     public class CognitoUserIdentityService : ICognitoUserInfoService
     {
@@ -17,7 +17,11 @@ namespace MediaManagement.Api.Services
 
         public async Task<UserInformation> GetUserInformationAsync(string userToken, CancellationToken cancellationToken = default)
         {
-            var requestMessage = new HttpRequestMessage() { Method = HttpMethod.Get };
+            var requestMessage = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{_httpClient.BaseAddress}oauth2/userinfo"),
+                Method = HttpMethod.Get
+            };
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue(scheme: "Bearer", parameter: userToken);
 
             var response = await _httpClient.SendAsync(requestMessage, cancellationToken);

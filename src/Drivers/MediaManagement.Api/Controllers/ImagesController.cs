@@ -1,5 +1,5 @@
-﻿using MediaManagement.Api.Extensions;
-using MediaManagement.Api.Services;
+﻿using MediaManagement.Api.Authentication;
+using MediaManagement.Api.Extensions;
 using MediaManagement.Application.UseCases.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,12 +8,13 @@ namespace MediaManagement.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ImageController : ControllerBase
+    public class ImagesController : ControllerBase
     {
         private readonly ICognitoUserInfoService _cognitoIdentityService;
         private readonly IImageUseCase _imageUseCase;
 
-        public ImageController(ICognitoUserInfoService cognitoIdentityService, IImageUseCase imageUseCase)
+
+        public ImagesController(ICognitoUserInfoService cognitoIdentityService, IImageUseCase imageUseCase)
         {
             _cognitoIdentityService = cognitoIdentityService;
             _imageUseCase = imageUseCase;
@@ -25,7 +26,7 @@ namespace MediaManagement.Api.Controllers
         /// <param name="fileIdentifier">Nome do arquivo a ser baixado</param>
         /// <returns>Retorna arquivo ZIP com imagens extraídas do vídeo.</returns>
         [HttpGet("download")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = AuthSchemes.BearerToken)]
         public async Task<IActionResult> DownloadImages(string fileIdentifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(fileIdentifier))
