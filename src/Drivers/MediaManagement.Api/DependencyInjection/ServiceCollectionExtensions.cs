@@ -1,10 +1,10 @@
 ﻿using MediaManagement.Api.Authentication;
 using MediaManagement.Api.Authentication.Options;
-using MediaManagement.Application.UseCases;
-using MediaManagement.Application.UseCases.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Threading.RateLimiting;
 
 namespace MediaManagement.Api.DependencyInjection
 {
@@ -53,6 +53,20 @@ namespace MediaManagement.Api.DependencyInjection
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
                 });
+
+            return services;
+        }
+
+        public static IServiceCollection ConfigureRateLimiting(this IServiceCollection services)
+        {
+            services.AddRateLimiter(_ => _
+                .AddFixedWindowLimiter(policyName: "fixed", options =>
+                {
+                    options.PermitLimit = 30;
+                    options.Window = TimeSpan.FromSeconds(20);
+                    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    options.QueueLimit = 10;
+                }));
 
             return services;
         }

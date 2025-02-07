@@ -1,7 +1,6 @@
 using MediaManagement.Application.DependecyInjection;
 using MediaManagement.Database.DependecyInjection;
 using MediaManagement.S3.DependencyInjection;
-
 using MediaManagement.Api.DependencyInjection;
 using Microsoft.AspNetCore.Http.Features;
 using MediaManagement.SQS.DependencyInjection;
@@ -18,6 +17,9 @@ builder.Services
     .AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection") ??
         throw new Exception("No connection string configured!"));
+
+// Configura limite de requisições por segundo
+builder.Services.ConfigureRateLimiting();
 
 // Adicionando o gerenciador de arquivos S3
 builder.Services.AddS3FileManager(builder.Configuration);
