@@ -1,6 +1,7 @@
 using MediaManagement.Api.Authentication;
 using MediaManagement.Api.Contracts.Requests;
 using MediaManagement.Api.Contracts.Responses;
+using MediaManagement.Api.Contracts.Validators;
 using MediaManagement.Api.Extensions;
 using MediaManagement.Application.UseCases.Interfaces;
 using MediaManagementApi.Domain.Entities;
@@ -31,7 +32,8 @@ public class VideosController : ControllerBase
     [Authorize(AuthenticationSchemes = AuthSchemes.BearerToken)]
     public async Task<IActionResult> UploadVideo(IFormFile file, CancellationToken cancellationToken)
     {
-        if (file == null || file.Length == 0)
+        bool fileIsValid = VideoFormFileValidator.Validate(file);
+        if (!fileIsValid)
         {
             return BadRequest(new { message = "O arquivo enviado é inválido ou está vazio." });
         }
