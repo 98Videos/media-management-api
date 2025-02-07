@@ -54,8 +54,8 @@
 
         private static bool IsAcceptedVideoFormat(IFormFile file)
         {
-            var fileExtension = Path.GetExtension(file.FileName).ToLower();
-            return acceptedVideoExtensions.Contains(fileExtension);
+            var fileExtension = Path.GetExtension(file.FileName);
+            return acceptedVideoExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase);
         }
     }
 }

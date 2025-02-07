@@ -23,28 +23,28 @@ namespace MediaManagement.Api.Controllers
         /// <summary>
         /// Faz o download do arquivo especificado para o usuário autenticado.
         /// </summary>
-        /// <param name="fileIdentifier">Nome do arquivo a ser baixado</param>
+        /// <param name="videoId">Id do video a ser baixado</param>
         /// <returns>Retorna arquivo ZIP com imagens extraídas do vídeo.</returns>
         [HttpGet("download")]
         [Authorize(AuthenticationSchemes = AuthSchemes.BearerToken)]
-        public async Task<IActionResult> DownloadImages(string fileIdentifier, CancellationToken cancellationToken)
+        public async Task<IActionResult> DownloadImages(Guid videoId, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(fileIdentifier))
+            if (videoId == Guid.Empty)
             {
-                return BadRequest(new { message = "O arquivo enviado é inválido ou está vazio." });
+                return BadRequest(new { message = "Id do video é inválido" });
             }
             try
             {
                 var userToken = Request.GetJwtBearerToken();
-                var userInformation = await _cognitoIdentityService.GetUserInformationAsync(userToken);
-                var zipFile = await _imageUseCase.DownloadZipFileAsync(userInformation.Email, fileIdentifier);
+                var userInformation = await _cognitoIdentityService.GetUserInformationAsync(userToken, cancellationToken);
+                var zipFile = await _imageUseCase.DownloadZipFileAsync(userInformation.Email, videoId, cancellationToken);
                 
                 if (zipFile == null)
                 {
-                    return NotFound(new { message = $"Arquivo {fileIdentifier} não encontrado." });
+                    return NotFound(new { message = $"Não foi encontrado um arquivo para o video ou ele não terminou de ser processado" });
                 }
                 
-                return File(zipFile.FileStreamReference, "application/zip", fileIdentifier + ".zip");
+                return File(zipFile.FileStreamReference, "application/zip", videoId + ".zip");
             }
             catch (ArgumentException ex)
             {

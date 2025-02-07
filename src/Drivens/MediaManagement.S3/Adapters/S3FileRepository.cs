@@ -1,6 +1,5 @@
 using Amazon.Runtime;
 using Amazon.S3;
-using Amazon.S3.Model;
 using MediaManagement.S3.Exceptions;
 using MediaManagement.S3.Options;
 using MediaManagementApi.Domain.Entities;

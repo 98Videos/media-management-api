@@ -2,11 +2,11 @@
 
 public record ZipFile
 {
-    public string Identifier { get; private set; }
+    public string FileName { get; private set; }
     public Stream FileStreamReference { get; private set; }
-    public ZipFile(string identifier, Stream fileStreamReference)
+    public ZipFile(string fileName, Stream fileStreamReference)
     {
-        Identifier = identifier;
+        FileName = fileName;
         FileStreamReference = fileStreamReference;
     }
 

@@ -26,6 +26,7 @@ public class ImageControllerTests
     [Test]
     public async Task DownloadZip_ShouldReturnFileResult()
     {
+        var requestVideoId = Guid.NewGuid();
         var userInformation = new UserInformation("John Doe", "test@example.com");
         var zipFile = new ZipFile("test.zip", new MemoryStream(new byte[10]));
 
@@ -34,7 +35,7 @@ public class ImageControllerTests
             .ReturnsAsync(userInformation);
 
         //Mock
-        _imageUseCaseMock.Setup(u => u.DownloadZipFileAsync(userInformation.Email, "test.zip", It.IsAny<CancellationToken>()))
+        _imageUseCaseMock.Setup(u => u.DownloadZipFileAsync(userInformation.Email, requestVideoId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(zipFile);
 
         // Criar o HttpContext e mockar o Authorization header
@@ -50,7 +51,7 @@ public class ImageControllerTests
             ControllerContext = controllerContext // Definir o contexto no controller
         };
 
-        var result = await controller.DownloadImages("test.zip", It.IsAny<CancellationToken>());
+        var result = await controller.DownloadImages(requestVideoId, It.IsAny<CancellationToken>());
 
         Console.WriteLine($"Result Type: {result.GetType().Name}");
 
