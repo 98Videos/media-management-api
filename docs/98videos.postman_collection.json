@@ -1,0 +1,312 @@
+{
+	"info": {
+		"_postman_id": "f328537b-74fb-4dda-ba67-013aa541a72d",
+		"name": "98videos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2079822"
+	},
+	"item": [
+		{
+			"name": "cognito",
+			"item": [
+				{
+					"name": "get user info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://dotvideos-1.auth.us-east-1.amazoncognito.com/oauth2/userinfo",
+							"protocol": "https",
+							"host": [
+								"dotvideos-1",
+								"auth",
+								"us-east-1",
+								"amazoncognito",
+								"com"
+							],
+							"path": [
+								"oauth2",
+								"userinfo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get token",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "3uurfen04ps7npt937lk4gcsntgna0o8f972tro07c9gokoboh7",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "6f7h3rc8v4o62i7g2h2g37hvkc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic <base64 encoded client_id:client_secret>"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "authorization_code",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "f150c436-d0c4-4488-a4d1-3264c1f80ab1",
+									"type": "text"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "https://example.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://dotvideos-1.auth.us-east-1.amazoncognito.com/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"dotvideos-1",
+								"auth",
+								"us-east-1",
+								"amazoncognito",
+								"com"
+							],
+							"path": [
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UploadVideo",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "a",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/André/Videos/Movavi Video Editor/barrel.wmv"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{HOST}}/api/videos/upload",
+					"protocol": "http",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"videos",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "videolist",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					}
+				],
+				"url": {
+					"raw": "http://{{HOST}}/api/Videos/videolist",
+					"protocol": "http",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"Videos",
+						"videolist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "download zip",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					}
+				],
+				"url": {
+					"raw": "http://{{HOST}}/api/images/download?videoId=19242d71-73e3-4d8f-8ca8-7dd9f027d727",
+					"protocol": "http",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"images",
+						"download"
+					],
+					"query": [
+						{
+							"key": "videoId",
+							"value": "19242d71-73e3-4d8f-8ca8-7dd9f027d727"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update status",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "x-api-key",
+						"value": "a14743be-ab62-4d65-ab73-8c40109fa9e2",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"status\": \"Processado\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/Videos/:videoId/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"Videos",
+						":videoId",
+						"status"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "1",
+							"disabled": true
+						}
+					],
+					"variable": [
+						{
+							"key": "videoId",
+							"value": "0592df94-b866-4e6c-b674-d0af8f1aa62f"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{HOST}}/health",
+					"protocol": "http",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJraWQiOiJpMWk1RjNWSW04bXFWYXN5OVZTdlwvNHk1bjJiY2s4WElPenhiVWkxdGgxVT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJlNGM4OTQyOC0yMGQxLTcwZGUtYWM5YS1kZDQ5ZmEzMTUzODQiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV8zd2w5M0gwTmoiLCJ2ZXJzaW9uIjoyLCJjbGllbnRfaWQiOiI2ZjdoM3JjOHY0bzYyaTdnMmgyZzM3aHZrYyIsIm9yaWdpbl9qdGkiOiI0MjdjNmI4NS1kYmNkLTQ4ZmEtOGIyZC00YWU3ZGVlNDI3ZGIiLCJldmVudF9pZCI6IjdhOTI2MDcxLTUxYWItNDI0OS1hMTQxLTkwODY0ZWVkZTczNiIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoib3BlbmlkIiwiYXV0aF90aW1lIjoxNzM4OTc5NTAyLCJleHAiOjE3Mzg5ODMxMDIsImlhdCI6MTczODk3OTUwMiwianRpIjoiYTM0M2M4YzgtNTc1OS00ZjMxLThiNTUtZDVlMzE2MmVkMjFjIiwidXNlcm5hbWUiOiJhbmRyZSJ9.ineuepa6FX0-6UccUN5lVokw216NlnWOcnQOFJEvCVkoVkjppC_aUm8IRUmY86Jxjj07FYFWKaEXjxA-H29U4GuXt-dHzISY7oVpEYbAiJAUEfyVPYKZkylF-1aWyEDClH3xuo9sQloPnaai-St8FfiqJjkhQRVEmKyD7KTsSemcSgOVwSbOsVpQr65SaYc8zajocntpE6S0OcYxXeubAFOCDxhAdoO9Mcj3yF_1SXVjXCMzo3SL7pIx2hPKa5ULch68pr479jHDWXkI97aSTFzK8mfPHuZCXSfTV71YVOkryAeF_RAb-o-Zj4NCUcfM4jx9CHC0wBe5nhQVPtOcvA",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "HOST",
+			"value": "a22ec890ed4d144fcbdc6664bac3639a-921841546.us-east-1.elb.amazonaws.com",
+			"type": "string"
+		}
+	]
+}
