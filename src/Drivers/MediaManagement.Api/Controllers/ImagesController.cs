@@ -23,7 +23,7 @@ namespace MediaManagement.Api.Controllers
         /// <summary>
         /// Faz o download do arquivo especificado para o usuário autenticado.
         /// </summary>
-        /// <param name="videoId">Id do video a ser baixado</param>
+        /// <param name="videoId">Id do video enviado para gerar as imagens a serem baixadas</param>
         /// <returns>Retorna arquivo ZIP com imagens extraídas do vídeo.</returns>
         [HttpGet("download")]
         [Authorize(AuthenticationSchemes = AuthSchemes.BearerToken)]
