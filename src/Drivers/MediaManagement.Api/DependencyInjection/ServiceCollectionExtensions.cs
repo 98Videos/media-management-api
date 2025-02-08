@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using Serilog.Events;
 using System.Threading.RateLimiting;
 
 namespace MediaManagement.Api.DependencyInjection
@@ -67,6 +69,20 @@ namespace MediaManagement.Api.DependencyInjection
                     options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
                     options.QueueLimit = 10;
                 }));
+
+            return services;
+        }
+
+        public static IServiceCollection ConfigureLogging(this IServiceCollection services)
+        {
+            services.AddSerilog(cfg =>
+            {
+                cfg
+                    .WriteTo.Console()
+                    .MinimumLevel.Override("Microsoft.AspNetCore.Hosting", LogEventLevel.Warning)
+                    .MinimumLevel.Override("Microsoft.AspNetCore.Mvc", LogEventLevel.Warning)
+                    .MinimumLevel.Override("Microsoft.AspNetCore.Routing", LogEventLevel.Warning);
+            });
 
             return services;
         }

@@ -1,9 +1,10 @@
+using MediaManagement.Api.DependencyInjection;
 using MediaManagement.Application.DependecyInjection;
 using MediaManagement.Database.DependecyInjection;
 using MediaManagement.S3.DependencyInjection;
-using MediaManagement.Api.DependencyInjection;
-using Microsoft.AspNetCore.Http.Features;
 using MediaManagement.SQS.DependencyInjection;
+using Microsoft.AspNetCore.Http.Features;
+using Serilog;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Adicionando configuracoes de banco de dados PostgreSQL
 builder.Services.AddPostgresqlDatabase(builder.Configuration);
 builder.Services.RunDatabaseMigrations(builder.Configuration);
+
+// Configura log básico da aplicação
+builder.Services.ConfigureLogging();
 
 // Adiciona health check na aplicação
 builder.Services
@@ -70,6 +74,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+app.UseSerilogRequestLogging();
 
 app.MapHealthChecks("/health");
 

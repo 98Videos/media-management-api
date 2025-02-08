@@ -17,11 +17,11 @@ namespace MediaManagement.Api.Authentication
         {
         }
 
-        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!Request.Headers.TryGetValue(HeaderName, out var apiKeyValues))
             {
-                return AuthenticateResult.Fail("Missing API Key");
+                return Task.FromResult(AuthenticateResult.Fail("Missing API Key"));
             }
 
             var acceptedKeys = base.OptionsMonitor.CurrentValue
@@ -32,7 +32,7 @@ namespace MediaManagement.Api.Authentication
 
             if (string.IsNullOrEmpty(providedApiKey) || !acceptedKeys.ContainsKey(providedApiKey))
             {
-                return AuthenticateResult.Fail("Invalid API Key");
+                return Task.FromResult(AuthenticateResult.Fail("Invalid API Key"));
             }
 
             var claims = new[] { new Claim(ClaimTypes.Name, acceptedKeys[providedApiKey]) };
@@ -41,7 +41,7 @@ namespace MediaManagement.Api.Authentication
             var principal = new ClaimsPrincipal(identity);
             var ticket = new AuthenticationTicket(principal, Scheme.Name);
 
-            return AuthenticateResult.Success(ticket);
+            return Task.FromResult(AuthenticateResult.Success(ticket));
         }
     }
 }

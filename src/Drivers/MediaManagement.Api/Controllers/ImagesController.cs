@@ -44,7 +44,7 @@ namespace MediaManagement.Api.Controllers
                     return NotFound(new { message = $"Não foi encontrado um arquivo para o video ou ele não terminou de ser processado" });
                 }
                 
-                return File(zipFile.FileStreamReference, "application/zip", videoId + ".zip");
+                return File(zipFile.FileStreamReference, "application/zip", zipFile.FileName);
             }
             catch (ArgumentException ex)
             {
