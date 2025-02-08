@@ -64,13 +64,13 @@ spec:
                   name: media-management-api-secrets
                   key: media-manager-api-keys
             - name: SMTPSenderOptions__Host
-              value: live.smtp.mailtrap.io
+              value: "#{SMTP_HOST}#"
             - name: SMTPSenderOptions__Port
-              value: '587'
+              value: "#{SMTP_PORT}#"
             - name: SMTPSenderOptions__User
-              value: api
+              value: "#{SMTP_USER}#"
             - name: SMTPSenderOptions__FromEmail
-              value: hello@demomailtrap.com
+              value: "#{SMTP_FROM_EMAIL}#"
             - name: SMTPSenderOptions__Password
               valueFrom:
                 secretKeyRef: 
