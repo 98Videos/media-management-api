@@ -39,6 +39,7 @@ Por depender de alguns serviços da AWS, o setup necessita de uma conta com algu
 - Docker
 - Buckets S3 para armazenamento de vídeos e arquivos ZIP
 - Conta AWS com permissão para criação e consumo de filas no SQS
+- Servidor SMTP para testes (pode ser em docker)
 
 1. Na raiz do projeto, execute o comando
 ```bash
