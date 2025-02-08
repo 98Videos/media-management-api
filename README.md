@@ -1,6 +1,6 @@
 # Media Management API
 _____________________
-Microserviço responsável por gerenciar os arquivos de mídia do sistema. Onde ela é responsavel
+Microserviço responsável por gerenciar os arquivos de mídia do sistema. Onde ela é responsável
 pelo envio dos videos no S3 da AWS, gerencia o status de processamento do video.
 
 # Funcionalidades
