@@ -1,6 +1,7 @@
 using MediaManagement.Api.DependencyInjection;
 using MediaManagement.Application.DependecyInjection;
 using MediaManagement.Database.DependecyInjection;
+using MediaManagement.Email.SMTP.DependencyInjection;
 using MediaManagement.S3.DependencyInjection;
 using MediaManagement.SQS.DependencyInjection;
 using Microsoft.AspNetCore.Http.Features;
@@ -39,6 +40,9 @@ builder.Services.AddCognitoAuthentication(builder.Configuration);
 
 // Adiciona serviço de mensageria do sqs
 builder.Services.AddSqsMessagePublisher(builder.Configuration);
+
+// Adiciona serviço de envio de emails
+builder.Services.AddSMTPEmailSender(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer()
     .AddSwaggerGen();
