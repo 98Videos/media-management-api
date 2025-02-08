@@ -26,7 +26,7 @@ namespace MediaManagement.Email.SMTP.Adapters
             this.logger = logger;
         }
 
-        public async Task<bool> SendNotification(string recipient, string subject, string message)
+        public async Task<bool> SendNotification(string subject, string recipient, string message)
         {
             try
             {
