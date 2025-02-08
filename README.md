@@ -16,14 +16,18 @@ _____________________
 - .NET 8.0
 - SQS
 - S3
-- Nunit
+- NUnit
 - Moq
 - Entity Framework
+- Postgresql
+- Cognito
 - SMTP Server
 
 # Arquitetura
 _____________________
 O serviço de media management recebe o arquivo de vídeo do usuário para upload. Durante esse processo, o vídeo é enviado para o S3 da AWS, e o serviço de media management notifica o serviço de video processor por meio de uma mensagem na fila SQS da AWS, solicitando o processamento do arquivo. Após o processamento, o serviço de video processor envia uma notificação via HTTP ao serviço de media management para atualizar o status do vídeo. Em seguida, o serviço de media management atualiza o status e envia um e-mail ao usuário informando que o arquivo de imagens está pronto para download. Quando o usuário solicita o download, o serviço de media management recupera o arquivo do bucket S3 e realiza o download.
+
+Os endpoints utilizados pelo usuário do serviço de media management são protegidos por usuário e senha e utilizam o cognito para cadastramento dos usuários, geração de tokens JWT e validação de autenticação. As informações dos usuários são recuperadas no cognito utilizando o token JWT do usuário logado, e cada usuário só pode visualizar os arquivos que ele mesmo gerou. Já os endpoints que não fazem parte do fluxo de usuário como, por exemplo, o de atualização de status, são protegidos por um schema de autenticação de aplicação para aplicação, utilizando Api Key.
 
 ![arquiretura_solucao](docs/images/arquitetura.png)
 
@@ -39,7 +43,10 @@ Por depender de alguns serviços da AWS, o setup necessita de uma conta com algu
 1. Na raiz do projeto, execute o comando
 ```bash
    docker compose up
-   ```
+```
+
+[Postman com endpoints](./docs/98videos.postman_collection.json)
+
 
 # Tests
 Para executar os testes da aplicação, basta rodar o comando abaixo na raiz do projeto:
