@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: media-management-api-svc
+spec:
+  type: LoadBalancer
+  selector:
+    app: media-management-api
+  ports:
+    - port: 80
+      targetPort: 8080

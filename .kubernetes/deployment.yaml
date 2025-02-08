@@ -63,6 +63,19 @@ spec:
                 secretKeyRef: 
                   name: media-management-api-secrets
                   key: media-manager-api-keys
+            - name: SMTPSenderOptions__Host
+              value: "#{SMTP_HOST}#"
+            - name: SMTPSenderOptions__Port
+              value: "#{SMTP_PORT}#"
+            - name: SMTPSenderOptions__User
+              value: "#{SMTP_USER}#"
+            - name: SMTPSenderOptions__FromEmail
+              value: "#{SMTP_FROM_EMAIL}#"
+            - name: SMTPSenderOptions__Password
+              valueFrom:
+                secretKeyRef: 
+                  name: media-management-api-secrets
+                  key: smtp-password
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef: 

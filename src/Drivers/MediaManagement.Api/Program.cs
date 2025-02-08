@@ -1,10 +1,11 @@
+using MediaManagement.Api.DependencyInjection;
 using MediaManagement.Application.DependecyInjection;
 using MediaManagement.Database.DependecyInjection;
+using MediaManagement.Email.SMTP.DependencyInjection;
 using MediaManagement.S3.DependencyInjection;
-
-using MediaManagement.Api.DependencyInjection;
-using Microsoft.AspNetCore.Http.Features;
 using MediaManagement.SQS.DependencyInjection;
+using Microsoft.AspNetCore.Http.Features;
+using Serilog;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,11 +14,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddPostgresqlDatabase(builder.Configuration);
 builder.Services.RunDatabaseMigrations(builder.Configuration);
 
+// Configura log básico da aplicação
+builder.Services.ConfigureLogging();
+
 // Adiciona health check na aplicação
 builder.Services
     .AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection") ??
         throw new Exception("No connection string configured!"));
+
+// Configura limite de requisições por segundo
+builder.Services.ConfigureRateLimiting();
 
 // Adicionando o gerenciador de arquivos S3
 builder.Services.AddS3FileManager(builder.Configuration);
@@ -33,6 +40,9 @@ builder.Services.AddCognitoAuthentication(builder.Configuration);
 
 // Adiciona serviço de mensageria do sqs
 builder.Services.AddSqsMessagePublisher(builder.Configuration);
+
+// Adiciona serviço de envio de emails
+builder.Services.AddSMTPEmailSender(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer()
     .AddSwaggerGen();
@@ -68,6 +78,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+app.UseSerilogRequestLogging();
 
 app.MapHealthChecks("/health");
 
