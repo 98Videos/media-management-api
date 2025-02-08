@@ -19,6 +19,7 @@ _____________________
 - Nunit
 - Moq
 - Entity Framework
+- SMTP Server
 
 # Arquitetura
 _____________________
