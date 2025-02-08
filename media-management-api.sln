@@ -37,10 +37,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".kubernetes", ".kubernetes"
 		.kubernetes\deployment.yaml = .kubernetes\deployment.yaml
 		.kubernetes\hpa.yaml = .kubernetes\hpa.yaml
 		.kubernetes\secrets.yaml = .kubernetes\secrets.yaml
-		.kubernetes\service.yaml = .kubernetes\service.yaml
+		.kubernetes\load-balancer.yaml = .kubernetes\load-balancer.yaml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaManagement.Email.SMTP", "src\Drivens\MediaManagement.Email.SMTP\MediaManagement.Email.SMTP.csproj", "{2177A770-19A0-4D7E-A1A0-D9BC0AADBCF9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Load Tests", "Load Tests", "{65B3FCA5-3460-476B-8460-D04C7D8F5537}"
+	ProjectSection(SolutionItems) = preProject
+		test\Load Tests\load_tests.js = test\Load Tests\load_tests.js
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,5 +102,6 @@ Global
 		{EFD8766E-01C8-4E11-A033-C496E5FF5AC6} = {7D178B8E-E73D-43BB-B077-870EEE71CD6A}
 		{19AD9C78-7D17-4A11-8A74-163A43419232} = {A349415F-00EA-49A7-80C7-0A0BC4643200}
 		{2177A770-19A0-4D7E-A1A0-D9BC0AADBCF9} = {DE665C81-F00B-4263-9FC3-529C66E37A40}
+		{65B3FCA5-3460-476B-8460-D04C7D8F5537} = {7D178B8E-E73D-43BB-B077-870EEE71CD6A}
 	EndGlobalSection
 EndGlobal

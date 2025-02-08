@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: media-management-api-svc
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: media-management-api
   ports:
